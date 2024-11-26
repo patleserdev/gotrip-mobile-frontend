@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "GOTrip",
-    "slug": "GOTrip",
+    "slug": "gotrip",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,21 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "282625d7-8bdc-4e7e-882d-82cfcb59433a"
+      }
+    },
+    "owner": "lifemiam",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/282625d7-8bdc-4e7e-882d-82cfcb59433a"
     }
   }
 }
