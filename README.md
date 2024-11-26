@@ -1,6 +1,6 @@
-# Bienvenue sur GOTrip 👋 ![gotrip-logo-rounded-little](https://github.com/user-attachments/assets/ceda5ea0-22c8-4701-beb9-8e07f0818861)
+# Bienvenue sur GOTrip 👋 
 
-
+![gotrip-logo-rounded-little](https://github.com/user-attachments/assets/ceda5ea0-22c8-4701-beb9-8e07f0818861)
 
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
