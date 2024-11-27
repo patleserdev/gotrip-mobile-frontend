@@ -1,13 +1,14 @@
-import { Image, StyleSheet, Platform, Button } from "react-native";
+import { Image, StyleSheet, Platform, Button ,View} from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter} from "expo-router";
 import { Link } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme() ?? "light";
   const router = useRouter();
 
   const handleConnect = () => {
@@ -15,16 +16,17 @@ export default function HomeScreen() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
+    <>
+    <View style={styles.headerContainer}>
+      
         <Image
           source={require("@/assets/images/gotrip-logo.jpg")}
-          style={styles.logo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
+          style={styles.logo}/>
+        
+      
+    
+    </View>
+      <ThemedView style={[styles.titleContainer,{ backgroundColor:  Colors[colorScheme].background }]}>
         <ThemedText type="title">Bienvenue !</ThemedText>
       </ThemedView>
 
@@ -61,34 +63,43 @@ export default function HomeScreen() {
           <Link href="/forgotpassword">Mot de passe oublié ?</Link>
         </ThemedText>
       </ThemedView>
-    </ParallaxScrollView>
+ </>
   );
 }
 
 const styles = StyleSheet.create({
+  headerContainer:
+  {
+    height:250
+  },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     paddingHorizontal: 32,
     paddingTop: 32,
+    paddingBottom:16
+   
   },
   welcomeContainer: {
     paddingHorizontal: 32,
     gap: 8,
     marginBottom: 8,
-    paddingBottom:32
+    paddingBottom:32,
+    
   },
   buttonContainer: {
     paddingHorizontal: 32,
     gap: 8,
     marginBottom: 20,
+    
   },
   groupbuttonContainer: {
     paddingHorizontal: 32,
     gap: 8,
     marginTop: 8,
     marginBottom: 8,
+   
   },
   logo: {
     height: "100%",

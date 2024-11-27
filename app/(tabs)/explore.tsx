@@ -1,17 +1,19 @@
-import {
-  StyleSheet,
-  Image,
-} from "react-native";
-import { Collapsible } from "@/components/Collapsible";
+import { StyleSheet, Image, View, Text } from "react-native";
+
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import React from "react";
-import { Map } from "@/components/Map"
+import { Map } from "@/components/Map";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+
 export default function TabTwoScreen() {
+  const colorScheme = useColorScheme() ?? "light";
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#ffffff", dark: "#353636" }}
+      headerBackgroundColor={{ light: "#f0f0f0", dark: "#353636" }}
       headerImage={
         <Image
           source={require("@/assets/images/gotrip-logo-rounded.png")}
@@ -19,44 +21,25 @@ export default function TabTwoScreen() {
         />
       }
     >
-      <Map/>
+      <View
+        style={[
+          styles.mapTitleContainer,
+          { backgroundColor: colorScheme == 'light' ? '#28A046' : Colors[colorScheme].background },
+        ]}
+      >
+        <Text style={{ color: colorScheme == 'light' ? '#fff' : Colors[colorScheme].text ,fontSize:16}}>
+          Sélectionnez vos points d'intérêts
+        </Text>
+      </View>
+      <Map />
 
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Voir les points d'intérêts</ThemedText>
-      </ThemedView>
-
-      <ThemedView style={styles.listContainer}>
-        <Collapsible title="Historique">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Parcs et Zoos">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Musées">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Grands espaces">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Points de départ de rando">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Animations">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-      </ThemedView>
+   
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: "#808080",
     bottom: -90,
     left: -35,
     position: "absolute",
@@ -64,17 +47,22 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+    paddingTop: 32,
     padding: 16,
   },
   logo: {
     marginHorizontal: "auto",
-    marginVertical: 60,
+    marginVertical: "auto",
     height: 100,
     width: 100,
   },
+  mapTitleContainer: {
+    paddingLeft: 16,
+    paddingVertical: 8,
+  },
   mapContainer: {
     margin: 0,
-    backgroundColor: "#F5FCFF",
+
     height: 750,
     position: "relative",
   },
@@ -93,10 +81,11 @@ const styles = StyleSheet.create({
   mapButton: {},
   listContainer: {
     paddingHorizontal: 32,
+
+    paddingBottom: 48,
   },
   inputContainer: {
     paddingHorizontal: 5,
-    backgroundColor: "white",
     borderBottomEndRadius: 10,
     borderBottomLeftRadius: 10,
     borderBottomWidth: 2,

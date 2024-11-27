@@ -17,8 +17,14 @@ const MAPPING = {
   'zoomOut':'zoom-out',
   'zoomIn':'zoom-in',
   'addLocation':'add-location',
-  'myLocation':'my-location'
-  
+  'myLocation':'my-location',
+  'list':'list',
+  'arrowDropDown':'arrow-drop-down',
+  'arrowDropdownCircle':'arrow-drop-down-circle',
+  'arrowDropUp':'arrow-drop-up',
+  'check':'check',
+  'close':'close'
+
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],

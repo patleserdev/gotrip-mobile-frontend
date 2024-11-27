@@ -8,14 +8,19 @@ import {
   Text,
   ScrollView,
 } from "react-native";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
 
-import { HelloWave } from "@/components/HelloWave";
+import { Collapsible } from "@/components/Collapsible";
+
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+export default function InterestScreen() {
 
-export default function ProfileScreen() {
+  const colorScheme = useColorScheme();
+
+  
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
@@ -40,36 +45,7 @@ export default function ProfileScreen() {
         />
       }
     >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Votre profil</ThemedText>
-      </ThemedView>
-
-      <ThemedView style={styles.profileContainer}>
-        <ThemedText type="subtitle">Mes coordonnées personnelles</ThemedText>
-        <ThemedText type="defaultSemiBold">Nom :</ThemedText>
-
-        <ThemedText type="defaultSemiBold">Prénom :</ThemedText>
-
-        <ThemedText type="defaultSemiBold">Adresse mail :</ThemedText>
-
-        <ThemedText type="defaultSemiBold">
-          Modifier mon mot de passe :
-        </ThemedText>
-
-        <ThemedText type="subtitle">Mes préférences</ThemedText>
-
-        <ThemedView style={styles.titleAndCheckRow}>
-          <ThemedText type="defaultSemiBold" style={{ width: "70%" }}>
-            Recevoir la newsletter
-          </ThemedText>
-          <BouncyCheckbox onPress={(isChecked: boolean) => {}} />
-        </ThemedView>
-
-        <ThemedText>
-          (contient des suggestions de points d'intérêts) :
-        </ThemedText>
-      </ThemedView>
-
+      
       <ThemedView style={styles.listContainer}>
         <ThemedText type="subtitle">Mes points d'intérêts</ThemedText>
 
@@ -88,14 +64,46 @@ export default function ProfileScreen() {
         </ScrollView>
       </ThemedView>
 
-      <ThemedView style={styles.groupbuttonContainer}>
-        <ThemedText>
-          Saisissez votre mot de passe pour valider les modifications
+      <ThemedView
+        style={{
+          backgroundColor: Colors[colorScheme].background,
+          flexDirection: "row",
+          gap: 8,
+          paddingTop: 32,
+          padding: 16,
+        }}
+      >
+        <ThemedText type="title" style={{ color: Colors[colorScheme].text }}>
+          Voir les points d'intérêts
         </ThemedText>
-        <ThemedView style={styles.buttonContainer}>
-          <Button color="#28A046" title="Valider" />
-        </ThemedView>
       </ThemedView>
+
+      <ThemedView style={styles.listContainer}>
+        <Collapsible title="Historique">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Parcs et Zoos">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Musées">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Grands espaces">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Points de départ de rando">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+
+        <Collapsible title="Animations">
+          <ThemedText>ici une liste des points historique</ThemedText>
+        </Collapsible>
+      </ThemedView>
+
     </ParallaxScrollView>
   );
 }
