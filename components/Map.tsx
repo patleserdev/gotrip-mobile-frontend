@@ -28,7 +28,7 @@ export function Map() {
   const [markers, setMarkers] = useState<any>([]);
   const [newMarker, setNewMarker] = useState({
     title: "",
-    categorie: "",
+    categorie: {title:""},
     latitude: 0,
     longitude: 0,
   });
@@ -39,6 +39,7 @@ export function Map() {
   const [errors, setErrors] = useState([]);
   const isFocused = useIsFocused();
 
+  // console.log('markers',markers)
   useEffect(() => {
     if (isFocused) {
       setMapKey(Date.now());
@@ -46,22 +47,25 @@ export function Map() {
   }, []);
 
   const addMarker = () => {
+    setErrors([]);
     for (const property in newMarker) {
       if (newMarker[property] == "" || newMarker[property] == 0) {
         setErrors((prev) => [...prev, `Veuillez saisir ${property}`]);
       }
     }
 
-    if (!errors) {
+    if (errors.length == 0) 
+      {
       setModalVisible(false);
       setMarkers([...markers, { ...newMarker, id: markers.length }]);
-      setNewMarker({ title: "", categorie: "", latitude: 0, longitude: 0 });
+      setNewMarker({ title: "", categorie: {title:""}, latitude: 0, longitude: 0 });
       setErrors([]);
     }
   };
 
+
   const destroyNewMarker = () => {
-    setNewMarker({ title: "", categorie: "", latitude: 0, longitude: 0 });
+    setNewMarker({ title: "", categorie: {title:""}, latitude: 0, longitude: 0 });
     setErrors([]);
   };
 
@@ -69,7 +73,7 @@ export function Map() {
     // console.log(e);
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setIsEditable(false);
-    setNewMarker({ title: " ", categorie: " ", latitude, longitude });
+    setNewMarker({ title: "", categorie: "", latitude, longitude });
     setModalVisible(true);
   };
 
@@ -102,7 +106,7 @@ export function Map() {
       />
     );
   }
-
+console.log(newMarker)
   const displayMarkerInModal =
     markerInModal != null ? markers[markerInModal] : "";
 

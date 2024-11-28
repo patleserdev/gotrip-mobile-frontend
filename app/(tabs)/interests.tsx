@@ -16,10 +16,21 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-
+import { useRouter} from "expo-router";
 const items = require("@/constants/Items.ts");
 export default function InterestScreen() {
+
+  const router = useRouter();
+
   const colorScheme = useColorScheme() ?? "light";
+
+  // renvoi vers le point sur la carte 
+  const linkToMap=(id)=>{
+
+    router.push(`/(tabs)/explore`);
+  }
+
+  // placeholder items
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
@@ -27,7 +38,8 @@ export default function InterestScreen() {
 
   const getItemCount = (_data) => 5;
 
-  const Item = ({ title }) => (
+  // item de list
+  const Item = ({ id,title }) => (
     <View style={[styles.item,{backgroundColor:
       colorScheme == "light"
         ? "#28A046"
@@ -35,7 +47,7 @@ export default function InterestScreen() {
       <Text style={[styles.title,{ color: colorScheme == "light" ? "#fff" : Colors[colorScheme].text,}]}>{title}</Text>
       
          
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>linkToMap(id)}>
       <IconSymbol
                 title="Localiser"
                 size={24}
@@ -47,6 +59,7 @@ export default function InterestScreen() {
     </View>
   );
 
+  // liste d'items
   const List = () => (
     <ScrollView
       contentContainerStyle={[styles.listContainer,{backgroundColor:
