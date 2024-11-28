@@ -7,6 +7,7 @@ import {
   View,
   Text,
   ScrollView,
+  Switch
 } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
@@ -16,23 +17,38 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+const items = require("@/constants/Items.ts");
 export default function InterestScreen() {
-
   const colorScheme = useColorScheme();
 
-  
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
   });
 
-  const getItemCount = (_data) => 50;
+  const getItemCount = (_data) => 5;
 
   const Item = ({ title }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{title}</Text>
       <Button title="supprimer" />
     </View>
+  );
+
+  const List = () => (
+    <ScrollView
+      contentContainerStyle={styles.listContainer}
+      horizontal={true}
+      style={{ width: "100%" }}
+    >
+      <VirtualizedList
+        initialNumToRender={4}
+        renderItem={({ item }) => <Item title={item.title} />}
+        keyExtractor={(item) => item.id}
+        getItemCount={getItemCount}
+        getItem={getItem}
+      />
+    </ScrollView>
   );
 
   return (
@@ -45,24 +61,7 @@ export default function InterestScreen() {
         />
       }
     >
-      
-      <ThemedView style={styles.listContainer}>
-        <ThemedText type="subtitle">Mes points d'intérêts</ThemedText>
-
-        <ScrollView
-          contentContainerStyle={styles.listContainer}
-          horizontal={true}
-          style={{ width: "100%" }}
-        >
-          <VirtualizedList
-            initialNumToRender={4}
-            renderItem={({ item }) => <Item title={item.title} />}
-            keyExtractor={(item) => item.id}
-            getItemCount={getItemCount}
-            getItem={getItem}
-          />
-        </ScrollView>
-      </ThemedView>
+   
 
       <ThemedView
         style={{
@@ -79,31 +78,14 @@ export default function InterestScreen() {
       </ThemedView>
 
       <ThemedView style={styles.listContainer}>
-        <Collapsible title="Historique">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Parcs et Zoos">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Musées">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Grands espaces">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Points de départ de rando">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
-
-        <Collapsible title="Animations">
-          <ThemedText>ici une liste des points historique</ThemedText>
-        </Collapsible>
+        {items.map((item) => {
+          return (
+            <Collapsible title={`${item.title}`}>
+              <List />
+            </Collapsible>
+          );
+        })}
       </ThemedView>
-
     </ParallaxScrollView>
   );
 }
@@ -118,12 +100,12 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
-    paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+    paddingHorizontal: 32,
+    backgroundColor: "#f0f0f0",
   },
   logo: {
     marginHorizontal: "auto",
-    marginVertical:"auto",
+    marginVertical: "auto",
     height: 100,
     width: 100,
   },
@@ -132,13 +114,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 8,
-    backgroundColor:"#f0f0f0"
-    
+    backgroundColor: "#f0f0f0",
   },
   listContainer: {
-    paddingHorizontal:32,
+    paddingHorizontal: 32,
     width: "100%",
-    backgroundColor:"#f0f0f0"
+    backgroundColor: "#f0f0f0",
   },
   item: {
     flexDirection: "row",
@@ -152,9 +133,9 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     gap: 8,
-    paddingVertical:16,
-    paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    backgroundColor: "#f0f0f0",
   },
   buttonContainer: {
     gap: 8,
@@ -163,7 +144,7 @@ const styles = StyleSheet.create({
   groupbuttonContainer: {
     gap: 8,
     paddingVertical: 16,
-    paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+    paddingHorizontal: 32,
+    backgroundColor: "#f0f0f0",
   },
 });

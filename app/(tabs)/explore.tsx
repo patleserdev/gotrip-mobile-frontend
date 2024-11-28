@@ -1,4 +1,4 @@
-import { StyleSheet, Image, View, Text } from "react-native";
+import { StyleSheet, Image, View, Text,Button } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
@@ -7,7 +7,8 @@ import React from "react";
 import { Map } from "@/components/Map";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
-
+import Badge from "@/components/Badge";
+const items = require("@/constants/Items.ts")
 export default function TabTwoScreen() {
   const colorScheme = useColorScheme() ?? "light";
 
@@ -32,6 +33,17 @@ export default function TabTwoScreen() {
         </Text>
       </View>
       <Map />
+      <View style={styles.bottomContainer}>
+        {items.map((item)=>{
+          return(
+            <Badge title={`${item.title}`} bgColor='#30d15c' color='#fff'/> 
+          )
+       
+        })}
+        
+        
+        
+      </View>
 
    
     </ParallaxScrollView>
@@ -60,42 +72,15 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingVertical: 8,
   },
-  mapContainer: {
-    margin: 0,
-
-    height: 750,
-    position: "relative",
-  },
-  map: {
-    height: 450,
-  },
-  mapButtonsContainer: {
-    position: "absolute",
-    bottom: 180,
-    right: 0,
-    zIndex: 5,
-    flex: 1,
-    flexDirection: "column",
-    margin: 5,
-  },
-  mapButton: {},
-  listContainer: {
-    paddingHorizontal: 32,
-
-    paddingBottom: 48,
-  },
-  inputContainer: {
-    paddingHorizontal: 5,
-    borderBottomEndRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomWidth: 2,
-    paddingVertical: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 5,
-    marginVertical: 5,
-    borderRadius: 5,
-  },
+  bottomContainer:
+  {
+    minHeight:'25%',
+    borderTopWidth:2,
+    flex:1,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-around',
+    flexWrap:'wrap',
+    padding:5
+  }
 });

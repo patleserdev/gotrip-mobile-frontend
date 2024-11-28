@@ -3,14 +3,16 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { View,StyleSheet,Text } from 'react-native';
 
 
-  export default function SelectInput({items,title})
+  export default function SelectInput({items,title,selected})
   {
+  
 
  return (
   <SelectDropdown
     data={items}
     onSelect={(selectedItem, index) => {
-      console.log(selectedItem, index);
+      // console.log(selectedItem, index);
+      selected(selectedItem)
     }}
     renderButton={(selectedItem, isOpened) => {
       return (
@@ -43,21 +45,23 @@ import { View,StyleSheet,Text } from 'react-native';
     dropdownButtonStyle: {
       width: '100%',
       height: 40,
-      backgroundColor: '#E9ECEF',
+      backgroundColor: '#27A046',
       borderRadius: 12,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 12,
+      
     },
     dropdownButtonTxtStyle: {
       flex: 1,
       fontSize: 18,
       fontWeight: '500',
-      color: '#151E26',
+      color: '#fff',
     },
     dropdownButtonArrowStyle: {
       fontSize: 28,
+      color: '#fff',
     },
     dropdownButtonIconStyle: {
       fontSize: 28,
