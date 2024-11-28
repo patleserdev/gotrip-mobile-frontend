@@ -8,7 +8,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import Badge from "@/components/Badge";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
-const items = require("@/constants/Items.ts")
+const items = require("@/constants/Items.ts");
 
 export function Map() {
   const colorScheme = useColorScheme() ?? "light";
@@ -30,15 +30,15 @@ export function Map() {
     title: "",
     categorie: "",
     latitude: 0,
-    longitude: 0
+    longitude: 0,
   });
   const [markerInModal, setMarkerInModal] = useState(null);
   const [mapKey, setMapKey] = useState<any>();
-  const [isEditable,setIsEditable]=useState(false)
-  const [isFilterable,setIsFilterable]=useState(false)
-  const [errors,setErrors]=useState([])
+  const [isEditable, setIsEditable] = useState(false);
+  const [isFilterable, setIsFilterable] = useState(false);
+  const [errors, setErrors] = useState([]);
   const isFocused = useIsFocused();
- 
+
   useEffect(() => {
     if (isFocused) {
       setMapKey(Date.now());
@@ -46,43 +46,37 @@ export function Map() {
   }, []);
 
   const addMarker = () => {
-
-    for(const property in newMarker)
-    {
-      if(newMarker[property] == "" || newMarker[property] == 0)
-      {
-        setErrors((prev)=>[...prev,`Veuillez saisir ${property}`])
+    for (const property in newMarker) {
+      if (newMarker[property] == "" || newMarker[property] == 0) {
+        setErrors((prev) => [...prev, `Veuillez saisir ${property}`]);
       }
     }
 
-    if(!errors)
-    {
+    if (!errors) {
       setModalVisible(false);
       setMarkers([...markers, { ...newMarker, id: markers.length }]);
       setNewMarker({ title: "", categorie: "", latitude: 0, longitude: 0 });
-      setErrors([])
+      setErrors([]);
     }
-    
   };
 
   const destroyNewMarker = () => {
     setNewMarker({ title: "", categorie: "", latitude: 0, longitude: 0 });
-    setErrors([])
+    setErrors([]);
   };
 
   const handleNewMarker = (e: any) => {
     // console.log(e);
     const { latitude, longitude } = e.nativeEvent.coordinate;
-    setIsEditable(false)
+    setIsEditable(false);
     setNewMarker({ title: " ", categorie: " ", latitude, longitude });
     setModalVisible(true);
   };
 
   const handleOpenMarker = (id: number) => {
-    setIsEditable(true)
+    setIsEditable(true);
     setModalVisible(true);
     setMarkerInModal(id);
-   
   };
 
   const handleSelected = (value) => {
@@ -90,12 +84,10 @@ export function Map() {
     setNewMarker({ ...newMarker, categorie: value });
   };
 
-
-  const handleFilter = ()=>
-  {
+  const handleFilter = () => {
     setModalVisible(true);
-    setIsFilterable(true)
-  }
+    setIsFilterable(true);
+  };
 
   const displayNewMarker = [];
   if (newMarker) {
@@ -133,7 +125,7 @@ export function Map() {
         onChangeText={(text) => setNewMarker({ ...newMarker, title: text })}
         value={newMarker.title}
       />
-       <View style={styles.buttonsContainer}>
+      <View style={styles.buttonsContainer}>
         <Button
           title="Ajouter un point d'intérêt"
           onPress={addMarker}
@@ -155,8 +147,13 @@ export function Map() {
         />
       </View>
       <View>
-      {!isEditable && errors && errors.map((error,i)=> <Text key={i} style={styles.errors}>{error}</Text>  )}
-       
+        {!isEditable &&
+          errors &&
+          errors.map((error, i) => (
+            <Text key={i} style={styles.errors}>
+              {error}
+            </Text>
+          ))}
       </View>
     </KeyboardAvoidingView>
   );
@@ -196,7 +193,9 @@ export function Map() {
                 ? "#28A046"
                 : Colors[colorScheme].background,
           }}
-          onPress={()=>{handleFilter()}}
+          onPress={() => {
+            handleFilter();
+          }}
         >
           <Text
             style={{
@@ -207,8 +206,9 @@ export function Map() {
             Filtrer les points d'intérêts
           </Text>
         </TouchableOpacity>
-       
       </View>
+
+      {/* MODAL */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -227,7 +227,7 @@ export function Map() {
                 setModalVisible(!modalVisible);
                 destroyNewMarker();
                 setIsEditable(false);
-                setIsFilterable(false)
+                setIsFilterable(false);
               }}
             >
               <IconSymbol
@@ -240,21 +240,24 @@ export function Map() {
 
             {!isFilterable && !isEditable && displayInputs}
 
-            {isFilterable && <ScrollView style={styles.filterContainer}>
-            
-          {  items.map((item,i)=>{
-          return(
-            <Badge key={i} title={`${item.title}`} bgColor='#30d15c' color='#fff'/> 
-          )
-          
-        })}
-        </ScrollView>}
-
-
+            {/* FILTRES */}
+            {isFilterable && (
+              <ScrollView style={styles.filterContainer}>
+                {items.map((item, i) => {
+                  return (
+                    <Badge
+                      key={i}
+                      title={`${item.title}`}
+                      bgColor="#27A046"
+                      color="#fff"
+                    />
+                  );
+                })}
+              </ScrollView>
+            )}
           </View>
         </View>
       </Modal>
-
     </View>
   );
 }
@@ -293,9 +296,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     paddingHorizontal: 5,
-    flex:1,
-    alignItems:'stretch',
-    justifyContent:'space-around'
+    flex: 1,
+    alignItems: "stretch",
+    justifyContent: "space-around",
   },
   input: {
     borderWidth: 1,
@@ -308,11 +311,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
   },
-  buttonsContainer:
-  {
-    flex:0.5,
-    height:50,
-    justifyContent:'space-around'
+  buttonsContainer: {
+    flex: 0.5,
+    height: 50,
+    justifyContent: "space-around",
   },
 
   // modal
@@ -368,10 +370,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
-  errors:
-  {
-    color:"red",
-    fontSize:12
+  errors: {
+    color: "red",
+    fontSize: 12,
   },
   bottomContainer: {
     minHeight: "20%",
@@ -380,9 +381,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  filterContainer:
-  {
-    flex:1,
-
-  }
+  filterContainer: {
+    flex: 1,
+    
+  },
 });

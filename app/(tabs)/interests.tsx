@@ -7,22 +7,19 @@ import {
   View,
   Text,
   ScrollView,
-  Switch
+  TouchableOpacity,
 } from "react-native";
-
 import { Collapsible } from "@/components/Collapsible";
-
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import SimpleSlider from "@/components/SimpleSlider";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 
 const items = require("@/constants/Items.ts");
 export default function InterestScreen() {
-  const colorScheme = useColorScheme();
-
+  const colorScheme = useColorScheme() ?? "light";
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
@@ -31,17 +28,36 @@ export default function InterestScreen() {
   const getItemCount = (_data) => 5;
 
   const Item = ({ title }) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-      <Button title="supprimer" />
+    <View style={[styles.item,{backgroundColor:
+      colorScheme == "light"
+        ? "#28A046"
+        : Colors[colorScheme].background,}]}>
+      <Text style={[styles.title,{ color: colorScheme == "light" ? "#fff" : Colors[colorScheme].text,}]}>{title}</Text>
+      
+         
+      <TouchableOpacity>
+      <IconSymbol
+                title="Localiser"
+                size={24}
+                name={"place"}
+                color={colorScheme == "light" ? "#fff" : Colors[colorScheme].text}
+              />
+        </TouchableOpacity>
+        <Button color={"#28A046"} title="Détails" />
     </View>
   );
 
   const List = () => (
     <ScrollView
-      contentContainerStyle={styles.listContainer}
+      contentContainerStyle={[styles.listContainer,{backgroundColor:
+        colorScheme == "light"
+          ? "#28A046"
+          : Colors[colorScheme].background}]}
       horizontal={true}
-      style={{ width: "100%" }}
+      style={{ width: "100%",backgroundColor:
+        colorScheme == "light"
+          ? "#28A046"
+          : Colors[colorScheme].background }}
     >
       <VirtualizedList
         initialNumToRender={4}
@@ -49,6 +65,10 @@ export default function InterestScreen() {
         keyExtractor={(item) => item.id}
         getItemCount={getItemCount}
         getItem={getItem}
+        style={{backgroundColor:
+          colorScheme == "light"
+            ? "#28A046"
+            : Colors[colorScheme].background,}}
       />
     </ScrollView>
   );
@@ -63,8 +83,6 @@ export default function InterestScreen() {
         />
       }
     >
-   
-
       <ThemedView
         style={{
           backgroundColor: Colors[colorScheme].background,
@@ -74,17 +92,18 @@ export default function InterestScreen() {
           padding: 16,
         }}
       >
-        
-
         <ThemedText type="title" style={{ color: Colors[colorScheme].text }}>
           Voir les points d'intérêts
         </ThemedText>
       </ThemedView>
 
-      <ThemedView style={styles.listContainer}>
-        {items.map((item) => {
+      <ThemedView style={[styles.listContainer,{backgroundColor:
+                colorScheme == "light"
+                  ? "#ffffff"
+                  : Colors[colorScheme].background,}]}>
+        {items.map((item,i) => {
           return (
-            <Collapsible title={`${item.title}`}>
+            <Collapsible key={i} title={`${item.title}`}>
               <List />
             </Collapsible>
           );
@@ -96,7 +115,7 @@ export default function InterestScreen() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: "#808080",
+ 
     bottom: -90,
     left: -35,
     position: "absolute",
@@ -105,7 +124,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     paddingHorizontal: 32,
-    backgroundColor: "#f0f0f0",
+
   },
   logo: {
     marginHorizontal: "auto",
@@ -118,12 +137,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 8,
-    backgroundColor: "#f0f0f0",
+
   },
   listContainer: {
-    paddingHorizontal: 32,
+    paddingHorizontal: 8,
     width: "100%",
-    backgroundColor: "#f0f0f0",
+
   },
   item: {
     flexDirection: "row",
@@ -131,15 +150,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     marginVertical: 5,
+    
   },
   title: {
     width: "50%",
+
   },
   profileContainer: {
     gap: 8,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    backgroundColor: "#f0f0f0",
+
   },
   buttonContainer: {
     gap: 8,
@@ -149,6 +170,6 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    backgroundColor: "#f0f0f0",
+
   },
 });

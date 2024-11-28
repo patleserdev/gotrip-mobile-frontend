@@ -1,7 +1,6 @@
 import {
   Image,
   StyleSheet,
-  Platform,
   Button,
   VirtualizedList,
   View,
@@ -9,13 +8,15 @@ import {
   ScrollView,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-
-import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 export default function ProfileScreen() {
+
+  const colorScheme = useColorScheme() ?? "light";
+
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
@@ -25,7 +26,7 @@ export default function ProfileScreen() {
 
   const Item = ({ title }) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title,{color: Colors[colorScheme].text} ]}>{title}</Text>
       <Button title="supprimer" />
     </View>
   );
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+    
   },
   logo: {
     marginHorizontal: "auto",
@@ -124,13 +125,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 8,
-    backgroundColor:"#f0f0f0"
+   
     
   },
   listContainer: {
     paddingHorizontal:32,
     width: "100%",
-    backgroundColor:"#f0f0f0"
+  
   },
   item: {
     flexDirection: "row",
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical:16,
     paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+
   },
   buttonContainer: {
     gap: 8,
@@ -156,6 +157,6 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 16,
     paddingHorizontal:32,
-    backgroundColor:"#f0f0f0"
+
   },
 });

@@ -13,9 +13,11 @@ Elle permet également à la communauté inscrite d'avoir accès à ces points d
 ## Fonctionnalités
 - Map 
 - Géolocalisation
-- Authentification
-- Upload d'images
-- Upload de vidéos
+- Thème Jour/Nuit
+- Authentification(loading)
+- Upload d'images(loading)
+- Upload de vidéos(loading)
+- Mode Tuto sur la map
 
 
 
