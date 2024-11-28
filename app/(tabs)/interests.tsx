@@ -17,6 +17,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import SimpleSlider from "@/components/SimpleSlider";
+
 const items = require("@/constants/Items.ts");
 export default function InterestScreen() {
   const colorScheme = useColorScheme();
@@ -72,6 +74,8 @@ export default function InterestScreen() {
           padding: 16,
         }}
       >
+        
+
         <ThemedText type="title" style={{ color: Colors[colorScheme].text }}>
           Voir les points d'intérêts
         </ThemedText>

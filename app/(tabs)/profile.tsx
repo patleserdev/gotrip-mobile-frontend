@@ -21,7 +21,7 @@ export default function ProfileScreen() {
     title: `Lieu ${index + 1}`,
   });
 
-  const getItemCount = (_data) => 50;
+  const getItemCount = (_data) => 10;
 
   const Item = ({ title }) => (
     <View style={styles.item}>

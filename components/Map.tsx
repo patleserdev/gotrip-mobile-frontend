@@ -8,6 +8,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  ScrollView
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState } from "react";
@@ -15,8 +16,9 @@ import React from "react";
 import { useIsFocused } from "@react-navigation/native";
 import SelectInput from "./SelectInput";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-
+import Badge from "@/components/Badge";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 const items = require("@/constants/Items.ts")
 
 export function Map() {
@@ -33,19 +35,10 @@ export function Map() {
   const [markerInModal, setMarkerInModal] = useState(null);
   const [mapKey, setMapKey] = useState<any>();
   const [isEditable,setIsEditable]=useState(false)
+  const [isFilterable,setIsFilterable]=useState(false)
   const [errors,setErrors]=useState([])
   const isFocused = useIsFocused();
  
-  // const items = [
-  //   { title: "Site pitorresque" },
-  //   { title: "Monument historique" },
-  //   { title: "Coin de liberté" },
-  //   { title: "Point de baignade" },
-  //   { title: "Parc de loisirs" },
-  //   { title: "Spot de randonnée" },
-  //   { title: "Commerce à ne pas manquer" },
-  // ];
-
   useEffect(() => {
     if (isFocused) {
       setMapKey(Date.now());
@@ -96,6 +89,13 @@ export function Map() {
     // console.log(value)
     setNewMarker({ ...newMarker, categorie: value });
   };
+
+
+  const handleFilter = ()=>
+  {
+    setModalVisible(true);
+    setIsFilterable(true)
+  }
 
   const displayNewMarker = [];
   if (newMarker) {
@@ -187,6 +187,28 @@ export function Map() {
         ))}
         {displayNewMarker}
       </MapView>
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={{
+            padding: 10,
+            backgroundColor:
+              colorScheme == "light"
+                ? "#28A046"
+                : Colors[colorScheme].background,
+          }}
+          onPress={()=>{handleFilter()}}
+        >
+          <Text
+            style={{
+              color: colorScheme == "light" ? "#fff" : Colors[colorScheme].text,
+              fontSize: 16,
+            }}
+          >
+            Filtrer les points d'intérêts
+          </Text>
+        </TouchableOpacity>
+       
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -204,7 +226,8 @@ export function Map() {
               onPress={() => {
                 setModalVisible(!modalVisible);
                 destroyNewMarker();
-                setIsEditable(false)
+                setIsEditable(false);
+                setIsFilterable(false)
               }}
             >
               <IconSymbol
@@ -215,53 +238,23 @@ export function Map() {
               />
             </TouchableOpacity>
 
-            {!isEditable && displayInputs}
+            {!isFilterable && !isEditable && displayInputs}
+
+            {isFilterable && <ScrollView style={styles.filterContainer}>
+            
+          {  items.map((item,i)=>{
+          return(
+            <Badge key={i} title={`${item.title}`} bgColor='#30d15c' color='#fff'/> 
+          )
+          
+        })}
+        </ScrollView>}
+
+
           </View>
         </View>
       </Modal>
-      {/* <View style={styles.mapButtonsContainer}>
-  <TouchableOpacity>
-    <Text>
-      <IconSymbol
-        style={styles.mapButton}
-        size={40}
-        name={"zoomOut"}
-        color={"#000"}
-      />
-    </Text>
-  </TouchableOpacity>
-  <TouchableOpacity>
-    <Text>
-      {" "}
-      <IconSymbol
-        style={styles.mapButton}
-        size={40}
-        name={"zoomIn"}
-        color={"#000"}
-      />
-    </Text>
-  </TouchableOpacity>
-  <TouchableOpacity>
-    <Text>
-      <IconSymbol
-        style={styles.mapButton}
-        size={40}
-        name={"addLocation"}
-        color={"#000"}
-      />
-    </Text>
-  </TouchableOpacity>
-  <TouchableOpacity>
-    <Text>
-      <IconSymbol
-        style={styles.mapButton}
-        size={40}
-        name={"myLocation"}
-        color={"#000"}
-      />
-    </Text>
-  </TouchableOpacity>
-</View> */}
+
     </View>
   );
 }
@@ -286,6 +279,7 @@ const styles = StyleSheet.create({
   },
   // map
   mapContainer: {
+    height: 500,
     margin: 0,
     backgroundColor: "#F5FCFF",
   },
@@ -316,7 +310,6 @@ const styles = StyleSheet.create({
   },
   buttonsContainer:
   {
-
     flex:0.5,
     height:50,
     justifyContent:'space-around'
@@ -379,5 +372,17 @@ const styles = StyleSheet.create({
   {
     color:"red",
     fontSize:12
+  },
+  bottomContainer: {
+    minHeight: "20%",
+    borderTopWidth: 2,
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  filterContainer:
+  {
+    flex:1,
+
   }
 });

@@ -27,11 +27,14 @@ const styles = StyleSheet.create({
 
     buttonContainer:
     {
+        flex:1,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
         borderWidth:1,
-        padding:10,
+        padding:5,
         margin:2,
-        width:'48%',
-        height:100
+
       
     },
     textButton:
