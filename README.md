@@ -17,6 +17,4 @@ Elle permet également à la communauté inscrite d'avoir accès à ces points d
 - Upload d'images
 - Upload de vidéos
 
-
-
-![gotripinahand](https://github.com/user-attachments/assets/f76bd3e9-819f-4a8f-b6e0-d929e519f419)
+![gotripinahand](https://github.com/user-attachments/assets/56c463de-50a9-490e-9f0c-f026218de50e)
