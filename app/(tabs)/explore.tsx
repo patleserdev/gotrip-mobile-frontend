@@ -35,7 +35,7 @@ export default function ExploreScreen() {
       )}
 
       <ParallaxScrollView
-        headerBackgroundColor={{ light: "#f0f0f0", dark: "#353636" }}
+        headerBackgroundColor={{ light: "#f0f0f0", dark: "#000000" }}
         headerImage={
           <Image
             source={require("@/assets/images/gotrip-logo-rounded.png")}

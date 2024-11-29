@@ -13,6 +13,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import Separator from "@/components/Separator";
 export default function ProfileScreen() {
 
   const colorScheme = useColorScheme() ?? "light";
@@ -27,13 +28,13 @@ export default function ProfileScreen() {
   const Item = ({ title }) => (
     <View style={styles.item}>
       <Text style={[styles.title,{color: Colors[colorScheme].text} ]}>{title}</Text>
-      <Button title="supprimer" />
+      <Button color={colorScheme == 'light' ? '#2BA046' : '#2BA046' } title="supprimer" />
     </View>
   );
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#f0f0f0", dark: "#1D3D47" }}
+      headerBackgroundColor={{ light: "#f0f0f0", dark: "#000000" }}
       headerImage={
         <Image
           source={require("@/assets/images/gotrip-logo-rounded.png")}
@@ -63,13 +64,15 @@ export default function ProfileScreen() {
           <ThemedText type="defaultSemiBold" style={{ width: "70%" }}>
             Recevoir la newsletter
           </ThemedText>
-          <BouncyCheckbox onPress={(isChecked: boolean) => {}} />
+          <BouncyCheckbox fillColor="green" onPress={(isChecked: boolean) => {}} />
         </ThemedView>
 
         <ThemedText>
           (contient des suggestions de points d'intérêts) :
         </ThemedText>
       </ThemedView>
+
+     <Separator/>
 
       <ThemedView style={styles.listContainer}>
         <ThemedText type="subtitle">Mes points d'intérêts</ThemedText>
@@ -88,7 +91,7 @@ export default function ProfileScreen() {
           />
         </ScrollView>
       </ThemedView>
-
+      <Separator/>
       <ThemedView style={styles.groupbuttonContainer}>
         <ThemedText>
           Saisissez votre mot de passe pour valider les modifications
@@ -129,6 +132,7 @@ const styles = StyleSheet.create({
     
   },
   listContainer: {
+    gap: 8,
     paddingHorizontal:32,
     width: "100%",
   
@@ -147,11 +151,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical:16,
     paddingHorizontal:32,
+  
 
   },
   buttonContainer: {
     gap: 8,
-    marginBottom: 20,
+    marginVertical: 20,
   },
   groupbuttonContainer: {
     gap: 8,

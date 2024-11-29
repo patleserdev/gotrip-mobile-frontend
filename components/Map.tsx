@@ -20,6 +20,7 @@ import Badge from "@/components/Badge";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 const items = require("@/constants/Items.ts");
+const interests = require("@/constants/Interests.ts");
 
 export function Map() {
   const colorScheme = useColorScheme() ?? "light";
@@ -45,6 +46,12 @@ export function Map() {
       setMapKey(Date.now());
     }
   }, []);
+
+  useEffect(()=>{
+
+    setMarkers(interests);
+
+  },[])
 
   const addMarker = () => {
     setErrors([]);
@@ -106,9 +113,11 @@ export function Map() {
       />
     );
   }
-console.log(newMarker)
+console.log('markerInModal',markerInModal)
+
   const displayMarkerInModal =
-    markerInModal != null ? markers[markerInModal] : "";
+    markerInModal != null ? markers.find((marker)=>  marker.id == markerInModal ? marker : null ) : "";
+console.log('displayMarkerInModal',displayMarkerInModal)
 
   const displayInputs = (
     <KeyboardAvoidingView
@@ -176,9 +185,9 @@ console.log(newMarker)
         }}
         onPress={(e) => handleNewMarker(e)}
       >
-        {markers.map((marker: any) => (
+        {markers.map((marker: any,i) => (
           <Marker
-            key={marker.id}
+            key={i}
             coordinate={{
               latitude: marker.latitude,
               longitude: marker.longitude,

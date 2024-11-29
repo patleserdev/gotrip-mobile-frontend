@@ -1,11 +1,13 @@
 const items = [
-    { title: "Site pitorresque" },
+    { title: "Site pittoresque" },
     { title: "Monument historique" },
-    { title: "Coin de liberté" },
-    { title: "Point de baignade" },
+    { title: "Espaces Naturels" },
+    { title: "Aire de baignade" },
     { title: "Parc de loisirs" },
     { title: "Spot de randonnée" },
     { title: "Commerce à ne pas manquer" },
   ];
 
- module.exports= items
+ 
+
+ module.exports = items
