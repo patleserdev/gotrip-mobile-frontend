@@ -24,7 +24,8 @@ const MAPPING = {
   'arrowDropUp':'arrow-drop-up',
   'check':'check',
   'close':'close',
-  'place':'place'
+  'place':'place',
+  'arrow-circle-left':'arrow-circle-left'
 
 } as Partial<
   Record<
