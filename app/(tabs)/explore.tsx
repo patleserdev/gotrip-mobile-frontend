@@ -4,15 +4,28 @@ import { Image } from "expo-image";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Map } from "@/components/Map";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import { useLocalSearchParams } from "expo-router";
 
 export default function ExploreScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const [isTutored, setIsTutored] = useState(false);
+  const params = useLocalSearchParams()
+  const { id } = params;
 
+
+  useEffect(()=>{
+
+    if(params)
+    {
+      console.log('il y a un id',id)
+      setIsTutored(true)
+    }
+
+  })
   return (
     <View style={{position:'relative',height:'100%'}}>
       {!isTutored && (
@@ -63,7 +76,7 @@ export default function ExploreScreen() {
             Sélectionnez vos points d'intérêts
           </Text>
         </View>
-        <Map />
+        <Map inView={id}/>
       </ParallaxScrollView>
     </View>
   );

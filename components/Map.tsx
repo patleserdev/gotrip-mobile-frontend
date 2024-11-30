@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import React from "react";
 import { useIsFocused } from "@react-navigation/native";
 import SelectInput from "./SelectInput";
@@ -22,14 +22,14 @@ import { Colors } from "@/constants/Colors";
 const items = require("@/constants/Items.ts");
 const interests = require("@/constants/Interests.ts");
 
-export function Map() {
+export function Map({ inView = null }) {
   const colorScheme = useColorScheme() ?? "light";
   const [modalVisible, setModalVisible] = useState(false);
 
   const [markers, setMarkers] = useState<any>([]);
   const [newMarker, setNewMarker] = useState({
     title: "",
-    categorie: {title:""},
+    categorie: { title: "" },
     latitude: 0,
     longitude: 0,
   });
@@ -39,19 +39,43 @@ export function Map() {
   const [isFilterable, setIsFilterable] = useState(false);
   const [errors, setErrors] = useState([]);
   const isFocused = useIsFocused();
-
+  const mapRef = useRef(null);
   // console.log('markers',markers)
   useEffect(() => {
     if (isFocused) {
       setMapKey(Date.now());
     }
-  }, []);
+  }, [isFocused]);
 
-  useEffect(()=>{
-
+  useEffect(() => {
     setMarkers(interests);
+  }, [interests]);
 
-  },[])
+  useEffect(() => {
+  
+      if (inView && mapRef.current) {
+
+        const selectedMarker = markers.find((marker) => marker.id === Number(inView));
+ 
+        if (selectedMarker) {
+          console.log('Focusing on marker:', selectedMarker);
+          mapRef.current.animateToRegion(
+            {
+              latitude: selectedMarker.latitude,
+              longitude: selectedMarker.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            },
+            1000 // Durée de l'animation en millisecondes
+          );
+        }
+        else {
+          console.warn('Marker not found for ID:', inView);
+        }
+      }
+    
+
+  }, [inView]);
 
   const addMarker = () => {
     setErrors([]);
@@ -61,18 +85,26 @@ export function Map() {
       }
     }
 
-    if (errors.length == 0) 
-      {
+    if (errors.length == 0) {
       setModalVisible(false);
       setMarkers([...markers, { ...newMarker, id: markers.length }]);
-      setNewMarker({ title: "", categorie: {title:""}, latitude: 0, longitude: 0 });
+      setNewMarker({
+        title: "",
+        categorie: { title: "" },
+        latitude: 0,
+        longitude: 0,
+      });
       setErrors([]);
     }
   };
 
-
   const destroyNewMarker = () => {
-    setNewMarker({ title: "", categorie: {title:""}, latitude: 0, longitude: 0 });
+    setNewMarker({
+      title: "",
+      categorie: { title: "" },
+      latitude: 0,
+      longitude: 0,
+    });
     setErrors([]);
   };
 
@@ -85,6 +117,7 @@ export function Map() {
   };
 
   const handleOpenMarker = (id: number) => {
+    // console.log('ouvre modal avec id')
     setIsEditable(true);
     setModalVisible(true);
     setMarkerInModal(id);
@@ -113,11 +146,13 @@ export function Map() {
       />
     );
   }
-console.log('markerInModal',markerInModal)
+  // console.log('markerInModal',markerInModal)
 
   const displayMarkerInModal =
-    markerInModal != null ? markers.find((marker)=>  marker.id == markerInModal ? marker : null ) : "";
-console.log('displayMarkerInModal',displayMarkerInModal)
+    markerInModal != null
+      ? markers.find((marker) => (marker.id == markerInModal ? marker : null))
+      : "";
+  // console.log('displayMarkerInModal',displayMarkerInModal)
 
   const displayInputs = (
     <KeyboardAvoidingView
@@ -174,6 +209,7 @@ console.log('displayMarkerInModal',displayMarkerInModal)
   return (
     <View style={styles.mapContainer}>
       <MapView
+        ref={mapRef}
         key={mapKey}
         mapType="standard"
         style={styles.map}
@@ -185,13 +221,15 @@ console.log('displayMarkerInModal',displayMarkerInModal)
         }}
         onPress={(e) => handleNewMarker(e)}
       >
-        {markers.map((marker: any,i) => (
+        {markers.map((marker: any, i) => (
           <Marker
             key={i}
             coordinate={{
               latitude: marker.latitude,
               longitude: marker.longitude,
             }}
+            title={marker.title}
+            description={marker.categorie.title}
             onPress={() => handleOpenMarker(marker.id)}
           />
         ))}
@@ -396,6 +434,5 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     flex: 1,
-    
   },
 });

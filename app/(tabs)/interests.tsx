@@ -30,7 +30,7 @@ export default function InterestScreen() {
 
   // renvoi vers le point sur la carte
   const linkToMap = (id) => {
-    router.push(`/(tabs)/explore`);
+    router.push({pathname: `/(tabs)/explore`,params:{id:id}});
   };
 
   // item de list
@@ -53,7 +53,7 @@ export default function InterestScreen() {
         {item.title}
       </Text>
 
-      <TouchableOpacity onPress={() => linkToMap(id)}>
+      <TouchableOpacity onPress={() => linkToMap(item.id)}>
         <IconSymbol
           title="Localiser"
           size={24}
@@ -120,8 +120,9 @@ export default function InterestScreen() {
           backgroundColor: Colors[colorScheme].background,
           flexDirection: "row",
           gap: 8,
-          paddingTop: 32,
-          padding: 16,
+      
+          paddingHorizontal:32,
+          marginBottom:20
         }}
       >
         <ThemedText type="title" style={{ color: Colors[colorScheme].text }}>
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   listContainer: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 32,
     width: "100%",
     
   },

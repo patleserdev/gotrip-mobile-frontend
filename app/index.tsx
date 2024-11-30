@@ -49,7 +49,7 @@ export default function HomeScreen() {
 
       {componentLoaded == "welcome" && (
         <ThemedView style={styles.welcomeContainer}>
-          <ThemedText type="subtitle">
+          <ThemedText type="subtitle" >
             GOTrip vous permet d'enregistrer vos points d'intérêts sur une
             carte.
           </ThemedText>
@@ -101,13 +101,13 @@ export default function HomeScreen() {
         <View style={styles.borderedContainer}>
         <ThemedView style={styles.groupbuttonContainer}>
           <ThemedView style={styles.buttonContainer}>
-            <Text>Nom d'utilisateur ou email</Text>
+            <ThemedText>Nom d'utilisateur ou email</ThemedText>
             <TextInput
               keyboardType="default"
               style={{ borderWidth: 1, borderColor: "lightgrey" }}
             />
 
-            <Text>Mot de passe</Text>
+            <ThemedText>Mot de passe</ThemedText>
             <TextInput
               secureTextEntry={true}
               style={{ borderWidth: 1, borderColor: "lightgrey" }}
@@ -133,19 +133,19 @@ export default function HomeScreen() {
         <View style={styles.borderedContainer}>
             <ThemedView style={styles.groupbuttonContainer}>
             <ThemedView style={styles.buttonContainer}>
-            <Text>Adresse mail</Text>
+            <ThemedText>Adresse mail</ThemedText>
               <TextInput
                 keyboardType="email-address"
                 style={{ borderWidth: 1, borderColor: "lightgrey" }}
               />
 
-              <Text>Nom d'utilisateur</Text>
+              <ThemedText>Nom d'utilisateur</ThemedText>
               <TextInput
                 keyboardType="default"
                 style={{ borderWidth: 1, borderColor: "lightgrey" }}
               />
   
-              <Text>Mot de passe</Text>
+              <ThemedText>Mot de passe</ThemedText>
               <TextInput
                 secureTextEntry={true}
                 style={{ borderWidth: 1, borderColor: "lightgrey" }}
@@ -186,7 +186,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: 250,
+    height: '20%',
   },
   titleContainer: {
     flexDirection: "row",
@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     paddingHorizontal: 32,
-    gap: 8,
-    marginBottom: 8,
+    gap: 4,
+    marginBottom: 4,
     paddingBottom: 32,
   },
   backContainer: {
@@ -213,13 +213,13 @@ const styles = StyleSheet.create({
   },
   groupbuttonContainer: {
     paddingHorizontal: 32,
-    paddingVertical: 32,
-    gap: 32,
+    paddingVertical: '5%',
+    gap: 4,
   },
   buttonContainer: {
     paddingHorizontal: 32,
-    gap: 8,
-    marginBottom: 20,
+    gap: 4,
+    marginBottom: 5,
   },
 
   logo: {
@@ -228,5 +228,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+    objectFit:'cover'
   },
 });
