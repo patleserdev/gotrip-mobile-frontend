@@ -19,7 +19,7 @@ export default function ExploreScreen() {
 
   useEffect(()=>{
 
-    if(params)
+    if(id)
     {
       console.log('il y a un id',id)
       setIsTutored(true)

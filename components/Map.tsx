@@ -19,76 +19,110 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import Badge from "@/components/Badge";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+
 const items = require("@/constants/Items.ts");
 const interests = require("@/constants/Interests.ts");
 
+interface CategorieInterface {
+  title?: string;
+}
+
+interface MarkerInterface {
+  _id: number;
+  title?: string;
+  categorie: CategorieInterface | null;
+  latitude: number;
+  longitude: number;
+  [key: string]: any; // Permet l'accès dynamique par clé
+}
 export function Map({ inView = null }) {
   const colorScheme = useColorScheme() ?? "light";
   const [modalVisible, setModalVisible] = useState(false);
 
   const [markers, setMarkers] = useState<any>([]);
-  const [newMarker, setNewMarker] = useState({
+  const [newMarker, setNewMarker] = useState<MarkerInterface>({
+    _id: -1,
     title: "",
     categorie: { title: "" },
     latitude: 0,
     longitude: 0,
   });
-  const [markerInModal, setMarkerInModal] = useState(null);
+  const [markerInModal, setMarkerInModal] = useState<number>(0);
   const [mapKey, setMapKey] = useState<any>();
   const [isEditable, setIsEditable] = useState(false);
   const [isFilterable, setIsFilterable] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState<string[]>([]);
   const isFocused = useIsFocused();
-  const mapRef = useRef(null);
-  // console.log('markers',markers)
-  useEffect(() => {
-    if (isFocused) {
-      setMapKey(Date.now());
-    }
-  }, [isFocused]);
+  const mapRef = useRef<MapView>(null);
+  const [mapReady, setMapReady] = useState(false);
 
-  useEffect(() => {
-    setMarkers(interests);
-  }, [interests]);
-
-  useEffect(() => {
-  
-      if (inView && mapRef.current) {
-
-        const selectedMarker = markers.find((marker) => marker.id === Number(inView));
- 
-        if (selectedMarker) {
-          console.log('Focusing on marker:', selectedMarker);
-          mapRef.current.animateToRegion(
-            {
-              latitude: selectedMarker.latitude,
-              longitude: selectedMarker.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            },
-            1000 // Durée de l'animation en millisecondes
-          );
-        }
-        else {
-          console.warn('Marker not found for ID:', inView);
+  const getMarkers = async () => {
+    try {
+      const response = await fetch("https://gotrip-backend-git-main-patleserdevs-projects.vercel.app/markers");
+      if (response) {
+        const result = await response.json();
+        if (result) {
+          //return result.datas
+          console.log("markers3000", result);
+          return result.datas;
         }
       }
-    
+    } catch (error) {
+      console.log("markers3000error", error);
+    }
+  };
+  useEffect(() => {
+    // console.log("mapRef.current:", mapRef.current);
+  }, []);
 
-  }, [inView]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getMarkers();
+      setMarkers(data); // <-- ici on met à jour le state
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!inView || !mapReady || !mapRef.current || !markers?.length) return;
+
+    if (inView && mapRef.current && mapReady && markers.length) {
+      const selectedMarker = markers.find(
+        (marker: MarkerInterface) => marker.id === Number(inView)
+      );
+
+      if (selectedMarker) {
+        //console.log('Focusing on marker:', selectedMarker);
+        mapRef.current.animateToRegion(
+          {
+            latitude: selectedMarker.latitude,
+            longitude: selectedMarker.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+          1000 // Durée de l'animation en millisecondes
+        );
+      } else {
+        // console.warn('Marker not found for ID:', inView);
+      }
+    }
+  }, [inView, mapReady]);
 
   const addMarker = () => {
     setErrors([]);
     for (const property in newMarker) {
-      if (newMarker[property] == "" || newMarker[property] == 0) {
-        setErrors((prev) => [...prev, `Veuillez saisir ${property}`]);
+      const key = property as keyof MarkerInterface;
+      if (newMarker[key] == "" || newMarker[key] == 0) {
+        setErrors((prev) => [...prev, `Veuillez saisir ${key}`]);
       }
     }
 
     if (errors.length == 0) {
       setModalVisible(false);
-      setMarkers([...markers, { ...newMarker, id: markers.length }]);
+      setMarkers([...markers, { ...newMarker, id: markers.length + 1 }]);
       setNewMarker({
+        _id: -1,
         title: "",
         categorie: { title: "" },
         latitude: 0,
@@ -100,6 +134,7 @@ export function Map({ inView = null }) {
 
   const destroyNewMarker = () => {
     setNewMarker({
+      _id: -1,
       title: "",
       categorie: { title: "" },
       latitude: 0,
@@ -109,21 +144,29 @@ export function Map({ inView = null }) {
   };
 
   const handleNewMarker = (e: any) => {
-    // console.log(e);
+    setMarkerInModal(-1);
     const { latitude, longitude } = e.nativeEvent.coordinate;
     setIsEditable(false);
-    setNewMarker({ title: "", categorie: "", latitude, longitude });
+    setNewMarker({
+      _id: markers.length,
+      title: "",
+      categorie: null,
+      latitude,
+      longitude,
+    });
     setModalVisible(true);
   };
 
+  // console.log(newMarker)
+
   const handleOpenMarker = (id: number) => {
-    // console.log('ouvre modal avec id')
+    console.log("ouvre modal avec id", id);
     setIsEditable(true);
     setModalVisible(true);
     setMarkerInModal(id);
   };
 
-  const handleSelected = (value) => {
+  const handleSelected = (value: { title: string }) => {
     // console.log(value)
     setNewMarker({ ...newMarker, categorie: value });
   };
@@ -146,11 +189,12 @@ export function Map({ inView = null }) {
       />
     );
   }
-  // console.log('markerInModal',markerInModal)
 
   const displayMarkerInModal =
-    markerInModal != null
-      ? markers.find((marker) => (marker.id == markerInModal ? marker : null))
+    markerInModal != null && markers
+      ? markers.find((marker: MarkerInterface) =>
+          marker._id == markerInModal ? marker : null
+        )
       : "";
   // console.log('displayMarkerInModal',displayMarkerInModal)
 
@@ -213,6 +257,7 @@ export function Map({ inView = null }) {
         key={mapKey}
         mapType="standard"
         style={styles.map}
+        onMapReady={() => setMapReady(true)}
         initialRegion={{
           latitude: 48.862725,
           longitude: 2.287592,
@@ -221,21 +266,30 @@ export function Map({ inView = null }) {
         }}
         onPress={(e) => handleNewMarker(e)}
       >
-        {markers.map((marker: any, i) => (
-          <Marker
-            key={i}
-            coordinate={{
-              latitude: marker.latitude,
-              longitude: marker.longitude,
-            }}
-            title={marker.title}
-            description={marker.categorie.title}
-            onPress={() => handleOpenMarker(marker.id)}
-          />
-        ))}
+        {markers &&
+          markers.map((marker: any, i:number) => (
+            <Marker
+              key={i}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              title={marker.title}
+              description={marker.categorie?.title ?? ""}
+              onPress={() => handleOpenMarker(marker._id)}
+            />
+          ))}
         {displayNewMarker}
       </MapView>
+
       <View style={styles.bottomContainer}>
+        {!markers && (
+          <View style={{ padding: 10 }}>
+            <Text style={{ color: "red", fontWeight: 600 }}>
+              Aucun marqueur récupéré
+            </Text>
+          </View>
+        )}
         <TouchableOpacity
           style={{
             padding: 10,
@@ -271,7 +325,7 @@ export function Map({ inView = null }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>{displayMarkerInModal.title}</Text>
+            <Text style={styles.modalText}>{displayMarkerInModal?.title}</Text>
             <TouchableOpacity
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -294,7 +348,7 @@ export function Map({ inView = null }) {
             {/* FILTRES */}
             {isFilterable && (
               <ScrollView style={styles.filterContainer}>
-                {items.map((item, i) => {
+                {items.map((item, i:number) => {
                   return (
                     <Badge
                       key={i}
