@@ -23,9 +23,13 @@ const MAPPING = {
   'arrowDropdownCircle':'arrow-drop-down-circle',
   'arrowDropUp':'arrow-drop-up',
   'check':'check',
-  'close':'close',
+  "close":"close",
   'place':'place',
-  'arrow-circle-left':'arrow-circle-left'
+  'arrow-circle-left':'arrow-circle-left',
+  'logout':'logout',
+  'filter-alt':'filter-alt',
+  'favorite':'favorite',
+  'favorite-border':'favorite-border'
 
 } as Partial<
   Record<

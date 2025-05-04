@@ -1,9 +1,7 @@
 import {
   Image,
   StyleSheet,
-  Platform,
   Button,
-  VirtualizedList,
   View,
   Text,
   ScrollView,
@@ -18,23 +16,93 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
 import Separator from "@/components/Separator";
+import { getMarkers } from "@/functions/markers";
+import { useEffect, useState } from "react";
+import { getCategories } from "@/functions/categories";
+import { MarkerInterface,CategorieInterface } from "@/types/markers";
+//const items = require("@/constants/Items.ts");
+//const interests = require("@/constants/Interests.ts");
 
-const items = require("@/constants/Items.ts");
-const interests = require("@/constants/Interests.ts");
 export default function InterestScreen() {
-  const router = useRouter();
+  /***
+   *      ____  _____ ____ _        _    ____  _____
+   *     |  _ \| ____/ ___| |      / \  |  _ \| ____|
+   *     | | | |  _|| |   | |     / _ \ | |_) |  _|
+   *     | |_| | |__| |___| |___ / ___ \|  _ <| |___
+   *     |____/|_____\____|_____/_/   \_\_| \_\_____|
+   *
+   */
 
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
+  const [markers,setMarkers]=useState<MarkerInterface[]>([])
+  const [categories,setCategories]=useState<CategorieInterface[]>([])
+
+  /***
+ *      _____                          _     _                       
+ *     |  ___|  _   _   _ __     ___  | |_  (_)   ___    _ __    ___ 
+ *     | |_    | | | | | '_ \   / __| | __| | |  / _ \  | '_ \  / __|
+ *     |  _|   | |_| | | | | | | (__  | |_  | | | (_) | | | | | \__ \
+ *     |_|      \__,_| |_| |_|  \___|  \__| |_|  \___/  |_| |_| |___/
+ *                                                                   
+                                                                   
+ */
 
   // renvoi vers le point sur la carte
-  const linkToMap = (id) => {
-    router.push({pathname: `/(tabs)/explore`,params:{id:id}});
+  const linkToMap = (id: number) => {
+    router.push({ pathname: `/(tabs)/explore`, params: { id: id } });
   };
 
+  /***
+   *      _   _                  _____    __    __                 _
+   *     | | | |  ___    ___    | ____|  / _|  / _|   ___    ___  | |_
+   *     | | | | / __|  / _ \   |  _|   | |_  | |_   / _ \  / __| | __|
+   *     | |_| | \__ \ |  __/   | |___  |  _| |  _| |  __/ | (__  | |_
+   *      \___/  |___/  \___|   |_____| |_|   |_|    \___|  \___|  \__|
+   *
+   */
+
+    /**
+   * Récupération et state des marqueurs
+   */
+    useEffect(() => {
+      const fetchData = async () => {
+        const data = await getMarkers();
+        setMarkers(data);
+      };
+  
+      fetchData();
+    }, []);
+
+    useEffect(() => {
+      // console.log("mapRef.current:", mapRef.current);
+    }, []);
+  
+    /**
+     * Récupération et state des marqueurs
+     */
+    useEffect(() => {
+      const fetchData = async () => {
+        const data = await getCategories();
+        setCategories(data);
+      };
+  
+      fetchData();
+    }, []);
+
+  /***
+   *      ____    _                 _
+   *     |  _ \  (_)  ___   _ __   | |   __ _   _   _
+   *     | | | | | | / __| | '_ \  | |  / _` | | | | |
+   *     | |_| | | | \__ \ | |_) | | | | (_| | | |_| |
+   *     |____/  |_| |___/ | .__/  |_|  \__,_|  \__, |
+   *                       |_|                  |___/
+   *
+   */
+
   // item de list
-  const Item = (item) => (
+  const Item = (item : CategorieInterface) => (
     <View
       style={[
         styles.item,
@@ -53,7 +121,7 @@ export default function InterestScreen() {
         {item.title}
       </Text>
 
-      <TouchableOpacity onPress={() => linkToMap(item.id)}>
+      <TouchableOpacity onPress={() => linkToMap(item._id)}>
         <IconSymbol
           title="Localiser"
           size={24}
@@ -65,18 +133,16 @@ export default function InterestScreen() {
     </View>
   );
 
+  type ListProps = {
+    categorie: string;
+  };
   // liste d'items
-  const List = ({ categorie }) => {
+  const List = ({ categorie  }: ListProps ) => {
 
-    if(interests)
-    {
-      
-    }
-    const filteredList = interests.filter(
-      (interest) =>
-        interest.categorie.title.toLowerCase() == categorie.toLowerCase()
+    const filteredList = markers.filter(
+      (marker) =>
+        marker.categorie?.title?.toLowerCase() == categorie.toLowerCase()
     );
-    console.log(filteredList)
 
     return (
       <ScrollView
@@ -98,8 +164,8 @@ export default function InterestScreen() {
       >
         <FlatList
           data={filteredList}
-          renderItem={({ item }) => <Item {...item} />}
-          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <Item key={item._id} {...item} />}
+          keyExtractor={(item) => item._id.toString()}
         />
       </ScrollView>
     );
@@ -120,9 +186,9 @@ export default function InterestScreen() {
           backgroundColor: Colors[colorScheme].background,
           flexDirection: "row",
           gap: 8,
-      
-          paddingHorizontal:32,
-          marginBottom:20
+
+          paddingHorizontal: 32,
+          marginBottom: 20,
         }}
       >
         <ThemedText type="title" style={{ color: Colors[colorScheme].text }}>
@@ -141,16 +207,19 @@ export default function InterestScreen() {
           },
         ]}
       >
-        {items.map((item, i) => {
+        {categories && categories?.map((categorie, i) => {
+            if (!categorie.title) return null; // 👈 skip si title est vide
           return (
-            <Collapsible key={i} title={`${item.title}`}>
-              <List categorie={item.title} />
+            <Collapsible key={categorie._id} title={`${categorie.title}`}>
+              <List categorie={categorie.title} />
             </Collapsible>
           );
         })}
+        {categories.length == 0  && <View><Text>Aucune catégorie</Text></View>}
+
       </ThemedView>
 
-      <Separator/>
+      <Separator />
     </ParallaxScrollView>
   );
 }
@@ -181,14 +250,13 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 32,
     width: "100%",
-    
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    marginVertical: 5,
+    marginVertical: 10,
   },
   title: {
     width: "50%",

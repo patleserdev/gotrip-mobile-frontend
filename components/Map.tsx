@@ -9,7 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  FlatList,
 } from "react-native";
+import { Image } from "expo-image";
+import { ThemedText } from "./ThemedText";
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState, useRef } from "react";
 import React from "react";
@@ -19,31 +22,28 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import Badge from "@/components/Badge";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import { getMarkers, updateMarker } from "@/functions/markers";
+import { CategorieInterface, MarkerInterface } from "@/types/markers";
+import { getCategories } from "@/functions/categories";
 
-const items = require("@/constants/Items.ts");
-const interests = require("@/constants/Interests.ts");
-
-interface CategorieInterface {
-  title?: string;
-}
-
-interface MarkerInterface {
-  _id: number;
-  title?: string;
-  categorie: CategorieInterface | null;
-  latitude: number;
-  longitude: number;
-  [key: string]: any; // Permet l'accès dynamique par clé
-}
-export function Map({ inView = null }) {
+export function Map({ inView = null }: { inView?: string | string[] | null }) {
+  /***
+   *      ____  _____ ____ _        _    ____  _____
+   *     |  _ \| ____/ ___| |      / \  |  _ \| ____|
+   *     | | | |  _|| |   | |     / _ \ | |_) |  _|
+   *     | |_| | |__| |___| |___ / ___ \|  _ <| |___
+   *     |____/|_____\____|_____/_/   \_\_| \_\_____|
+   *
+   */
   const colorScheme = useColorScheme() ?? "light";
   const [modalVisible, setModalVisible] = useState(false);
 
   const [markers, setMarkers] = useState<any>([]);
+  const [categories, setCategories] = useState<CategorieInterface[]>([]);
   const [newMarker, setNewMarker] = useState<MarkerInterface>({
     _id: -1,
     title: "",
-    categorie: { title: "" },
+    categorie: { _id: -1, title: "" },
     latitude: 0,
     longitude: 0,
   });
@@ -56,34 +56,179 @@ export function Map({ inView = null }) {
   const mapRef = useRef<MapView>(null);
   const [mapReady, setMapReady] = useState(false);
 
-  const getMarkers = async () => {
-    try {
-      const response = await fetch("https://gotrip-backend-git-main-patleserdevs-projects.vercel.app/markers");
-      if (response) {
-        const result = await response.json();
-        if (result) {
-          //return result.datas
-          console.log("markers3000", result);
-          return result.datas;
-        }
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: boolean }>(
+    {}
+  );
+
+  /***
+   *      _____                          _     _
+   *     |  ___|  _   _   _ __     ___  | |_  (_)   ___    _ __    ___
+   *     | |_    | | | | | '_ \   / __| | __| | |  / _ \  | '_ \  / __|
+   *     |  _|   | |_| | | | | | | (__  | |_  | | | (_) | | | | | \__ \
+   *     |_|      \__,_| |_| |_|  \___|  \__| |_|  \___/  |_| |_| |___/
+   *
+   */
+
+  /**
+   * Ajouter un point d'intérêt
+   */
+  const addMarker = () => {
+    setErrors([]);
+    for (const property in newMarker) {
+      const key = property as keyof MarkerInterface;
+      if (newMarker[key] == "" || newMarker[key] == 0) {
+        setErrors((prev) => [...prev, `Veuillez saisir ${key}`]);
       }
-    } catch (error) {
-      console.log("markers3000error", error);
+    }
+
+    if (errors.length == 0) {
+      setModalVisible(false);
+      setMarkers([...markers, { ...newMarker, id: markers.length + 1 }]);
+      setNewMarker({
+        _id: -1,
+        title: "",
+        categorie: { _id: -1, title: "" },
+        latitude: 0,
+        longitude: 0,
+      });
+      setErrors([]);
     }
   };
+
+  /**
+   * Supprimer un point d'intéret
+   */
+  const destroyNewMarker = () => {
+    setNewMarker({
+      _id: -1,
+      title: "",
+      categorie: { _id: -1, title: "" },
+      latitude: 0,
+      longitude: 0,
+    });
+    setErrors([]);
+  };
+
+  /**
+   * Prend en charge la création du nouveau marqueur
+   */
+  const handleNewMarker = (e: any) => {
+    setMarkerInModal(-1);
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    setIsEditable(false);
+    setNewMarker({
+      _id: markers.length,
+      title: "",
+      categorie: null,
+      latitude,
+      longitude,
+    });
+    setModalVisible(true);
+  };
+
+  /**
+   * Prend en charge l'ouverture du marqueur
+   */
+  const handleOpenMarker = (id: number) => {
+    //console.log("ouvre modal avec id", id);
+    setIsEditable(true);
+    setModalVisible(true);
+    setMarkerInModal(id);
+  };
+
+  /**
+   * Prend en charge la sélection de la catégorie
+   */
+  const handleSelected = (value: { _id: number; title: string }) => {
+    // console.log(value)
+    setNewMarker({ ...newMarker, categorie: value });
+  };
+
+  /**
+   * Prend en charge la sélection des filtres
+   */
+  const handleFilter = () => {
+    setMarkerInModal(-1);
+    setModalVisible(true);
+    setIsFilterable(true);
+  };
+
+  const toggleSwitch = (id: number) => {
+    setSwitchStates((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleFavoriteForMe= async(marker:MarkerInterface) =>{
+
+    if (!marker || typeof marker === 'string') return;
+
+    // 1. Créer une version modifiée du marker
+    const updatedMarker = {
+      ...marker,
+      isFavorite: !marker.isFavorite,
+    };
+
+    // 2. Remplacer ce marker dans le tableau
+    const updatedMarkers = markers.map((oneMarker:MarkerInterface) =>
+      oneMarker._id === updatedMarker._id ? updatedMarker : oneMarker
+    );
+
+    // 3. Mettre à jour le state principal
+    setMarkers(updatedMarkers);
+
+    // 4. Appeler ta fonction
+     // update for me but first update the marker
+
+  /* const response= await updateMarker(updatedMarker)
+
+   if(response)
+   {
+  console.log(response)
+   }
+*/
+console.log(updateMarker)
+  }
+
+
+  /***
+   *      _   _                  _____    __    __                 _
+   *     | | | |  ___    ___    | ____|  / _|  / _|   ___    ___  | |_
+   *     | | | | / __|  / _ \   |  _|   | |_  | |_   / _ \  / __| | __|
+   *     | |_| | \__ \ |  __/   | |___  |  _| |  _| |  __/ | (__  | |_
+   *      \___/  |___/  \___|   |_____| |_|   |_|    \___|  \___|  \__|
+   *
+   */
+
   useEffect(() => {
     // console.log("mapRef.current:", mapRef.current);
   }, []);
 
+  /**
+   * Récupération et state des marqueurs
+   */
   useEffect(() => {
     const fetchData = async () => {
       const data = await getMarkers();
-      setMarkers(data); // <-- ici on met à jour le state
+      setMarkers(data);
     };
 
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCategories();
+      setCategories(data);
+    };
+
+    fetchData();
+  }, []);
+
+  /**
+   * Déplacement lors de la sélection du marqueur
+   */
   useEffect(() => {
     if (!inView || !mapReady || !mapRef.current || !markers?.length) return;
 
@@ -109,73 +254,29 @@ export function Map({ inView = null }) {
     }
   }, [inView, mapReady]);
 
-  const addMarker = () => {
-    setErrors([]);
-    for (const property in newMarker) {
-      const key = property as keyof MarkerInterface;
-      if (newMarker[key] == "" || newMarker[key] == 0) {
-        setErrors((prev) => [...prev, `Veuillez saisir ${key}`]);
-      }
+  useEffect(() => {
+    if (categories.length > 0) {
+      const initialStates = categories.reduce((acc, cat) => {
+        acc[cat._id] = true;
+        return acc;
+      }, {} as { [key: number]: boolean });
+      setSwitchStates(initialStates);
     }
+  }, [categories]);
 
-    if (errors.length == 0) {
-      setModalVisible(false);
-      setMarkers([...markers, { ...newMarker, id: markers.length + 1 }]);
-      setNewMarker({
-        _id: -1,
-        title: "",
-        categorie: { title: "" },
-        latitude: 0,
-        longitude: 0,
-      });
-      setErrors([]);
-    }
-  };
+  /***
+   *      ____    _                 _
+   *     |  _ \  (_)  ___   _ __   | |   __ _   _   _
+   *     | | | | | | / __| | '_ \  | |  / _` | | | | |
+   *     | |_| | | | \__ \ | |_) | | | | (_| | | |_| |
+   *     |____/  |_| |___/ | .__/  |_|  \__,_|  \__, |
+   *                       |_|                  |___/
+   *
+   */
 
-  const destroyNewMarker = () => {
-    setNewMarker({
-      _id: -1,
-      title: "",
-      categorie: { title: "" },
-      latitude: 0,
-      longitude: 0,
-    });
-    setErrors([]);
-  };
-
-  const handleNewMarker = (e: any) => {
-    setMarkerInModal(-1);
-    const { latitude, longitude } = e.nativeEvent.coordinate;
-    setIsEditable(false);
-    setNewMarker({
-      _id: markers.length,
-      title: "",
-      categorie: null,
-      latitude,
-      longitude,
-    });
-    setModalVisible(true);
-  };
-
-  // console.log(newMarker)
-
-  const handleOpenMarker = (id: number) => {
-    console.log("ouvre modal avec id", id);
-    setIsEditable(true);
-    setModalVisible(true);
-    setMarkerInModal(id);
-  };
-
-  const handleSelected = (value: { title: string }) => {
-    // console.log(value)
-    setNewMarker({ ...newMarker, categorie: value });
-  };
-
-  const handleFilter = () => {
-    setModalVisible(true);
-    setIsFilterable(true);
-  };
-
+  /**
+   * Affichage du nouveau marqueur bleu
+   */
   const displayNewMarker = [];
   if (newMarker) {
     displayNewMarker.push(
@@ -190,6 +291,9 @@ export function Map({ inView = null }) {
     );
   }
 
+  /**
+   * Marqueur à afficher dans le modal
+   */
   const displayMarkerInModal =
     markerInModal != null && markers
       ? markers.find((marker: MarkerInterface) =>
@@ -198,6 +302,9 @@ export function Map({ inView = null }) {
       : "";
   // console.log('displayMarkerInModal',displayMarkerInModal)
 
+  /**
+   * Affichage du formulaire d'ajout d'un point d'intérêt
+   */
   const displayInputs = (
     <KeyboardAvoidingView
       style={styles.inputContainer}
@@ -206,7 +313,7 @@ export function Map({ inView = null }) {
     >
       <SelectInput
         title={"Choisir la catégorie"}
-        items={items}
+        items={categories}
         selected={handleSelected}
       />
       <Text>Nom du point d'intérêt</Text>
@@ -267,7 +374,7 @@ export function Map({ inView = null }) {
         onPress={(e) => handleNewMarker(e)}
       >
         {markers &&
-          markers.map((marker: any, i:number) => (
+          markers.map((marker: any, i: number) => (
             <Marker
               key={i}
               coordinate={{
@@ -302,14 +409,12 @@ export function Map({ inView = null }) {
             handleFilter();
           }}
         >
-          <Text
-            style={{
-              color: colorScheme == "light" ? "#fff" : Colors[colorScheme].text,
-              fontSize: 16,
-            }}
-          >
-            Filtrer les points d'intérêts
-          </Text>
+          <IconSymbol
+            style={styles.mapButton}
+            size={16}
+            name={"filter-alt"}
+            color={"#fff"}
+          />
         </TouchableOpacity>
       </View>
 
@@ -325,7 +430,61 @@ export function Map({ inView = null }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>{displayMarkerInModal?.title}</Text>
+            {displayMarkerInModal && !isFilterable && (
+              <View style={styles.displayMarkerInModal}>
+                <View style={styles.rowTitleZone}>
+                  <ThemedText type="subtitle" style={styles.modalText}>
+                    {displayMarkerInModal?.title}
+                  </ThemedText>
+                  <TouchableOpacity onPress={()=>{handleFavoriteForMe(displayMarkerInModal)}}>
+                    {displayMarkerInModal &&
+                      displayMarkerInModal.isFavorite && (
+                        <IconSymbol
+                          size={24}
+                          name={"favorite"}
+                          color={"#000"}
+                        />
+                      )}
+
+                    {displayMarkerInModal &&
+                      !displayMarkerInModal.isFavorite && (
+                        <IconSymbol
+                          size={24}
+                          name={"favorite-border"}
+                          color={"#000"}
+                        />
+                      )}
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <ThemedText style={styles.modalTextCategorie} type="default">
+                    {displayMarkerInModal.categorie?.title}
+                  </ThemedText>
+                </View>
+
+                <View>
+                  <ThemedText style={styles.modalText} type="default">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                    nibh metus, lobortis non fermentum nec, euismod non ex.
+                    Suspendisse sagittis lorem magna, quis porttitor ex
+                    consectetur in. Lorem ipsum dolor sit amet, consectetur
+                    adipiscing elit. In convallis arcu leo, quis venenatis enim
+                    vulputate quis. Vivamus fringilla enim mauris, eu ultrices.
+                  </ThemedText>
+                </View>
+
+                {displayMarkerInModal && (
+                  <Image
+                    source={{ uri: "https://placehold.co/600x400" }}
+                    height={200}
+                    width={300}
+                    style={{ objectFit: "cover", overflow: "hidden" }}
+                  />
+                )}
+              </View>
+            )}
+
+            {/* la petite croix qui ferme ! **/}
             <TouchableOpacity
               style={[styles.button, styles.buttonClose]}
               onPress={() => {
@@ -343,22 +502,39 @@ export function Map({ inView = null }) {
               />
             </TouchableOpacity>
 
+            {/** Ajouter un point d'intérêts **/}
             {!isFilterable && !isEditable && displayInputs}
 
-            {/* FILTRES */}
+            {/* Afficher les FILTRES */}
             {isFilterable && (
-              <ScrollView style={styles.filterContainer}>
-                {items.map((item, i:number) => {
-                  return (
+              <View style={styles.filterContainer}>
+                <Text
+                  style={{
+                    color:
+                      colorScheme == "light"
+                        ? "green"
+                        : Colors[colorScheme].text,
+                    fontSize: 16,
+                  }}
+                >
+                  Filtrer les points d'intérêts
+                </Text>
+                <FlatList
+                  style={{ maxHeight: categories.length * 70 }}
+                  data={categories}
+                  renderItem={({ item }) => (
                     <Badge
-                      key={i}
+                      key={item._id}
                       title={`${item.title}`}
                       bgColor="#27A046"
                       color="#fff"
+                      value={!switchStates[item._id]} // par défaut false si pas défini
+                      onValueChange={() => toggleSwitch(item._id)}
                     />
-                  );
-                })}
-              </ScrollView>
+                  )}
+                  keyExtractor={(item) => item._id.toString()}
+                />
+              </View>
             )}
           </View>
         </View>
@@ -387,12 +563,11 @@ const styles = StyleSheet.create({
   },
   // map
   mapContainer: {
-    height: 500,
-    margin: 0,
+    height: "97%",
     backgroundColor: "#F5FCFF",
   },
   map: {
-    height: 500,
+    height: "100%",
   },
 
   mapButton: {},
@@ -427,28 +602,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
   },
   modalView: {
-    minWidth: "80%",
+    minWidth: "70%",
     minHeight: "50%",
-    margin: 20,
+    margin: 0,
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 15,
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: 5,
+    paddingTop: 50,
+    paddingHorizontal: 10,
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 10,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 1,
     shadowRadius: 4,
     elevation: 5,
     borderWidth: 2,
     zIndex: 50,
     position: "relative",
+  },
+  displayMarkerInModal: {
+    alignItems: "flex-start",
+    width: 300,
+    minHeight: 500,
+    gap: 10,
+    paddingBottom: 10,
+  },
+  rowTitleZone: {
+    marginTop: 10,
+    width: 300,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  modalTextCategorie: {
+    width: "100%",
+    textTransform: "capitalize",
   },
   button: {
     borderRadius: 100,
@@ -471,22 +664,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
+  modalText: {},
   errors: {
     color: "red",
     fontSize: 12,
   },
   bottomContainer: {
-    minHeight: "20%",
-    borderTopWidth: 2,
+    position: "absolute",
+    bottom: 8,
+    right: 80,
+    minHeight: "10%",
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    padding: 10,
   },
   filterContainer: {
-    flex: 1,
+    gap: 10,
   },
 });

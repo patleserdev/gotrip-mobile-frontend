@@ -1,9 +1,5 @@
-import { StyleSheet, View, Text, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Button, TouchableOpacity,SafeAreaView } from "react-native";
 import { Image } from "expo-image";
-
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import React, { useEffect, useState } from "react";
 import { Map } from "@/components/Map";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -11,23 +7,67 @@ import { Colors } from "@/constants/Colors";
 import { useLocalSearchParams } from "expo-router";
 
 export default function ExploreScreen() {
+
+  /***
+ *      ____  _____ ____ _        _    ____  _____ 
+ *     |  _ \| ____/ ___| |      / \  |  _ \| ____|
+ *     | | | |  _|| |   | |     / _ \ | |_) |  _|  
+ *     | |_| | |__| |___| |___ / ___ \|  _ <| |___ 
+ *     |____/|_____\____|_____/_/   \_\_| \_\_____|
+ *                                                 
+ */
+
+  
   const colorScheme = useColorScheme() ?? "light";
   const [isTutored, setIsTutored] = useState(false);
   const params = useLocalSearchParams()
   const { id } = params;
 
 
+  /***
+ *      _   _                  _____    __    __                 _   
+ *     | | | |  ___    ___    | ____|  / _|  / _|   ___    ___  | |_ 
+ *     | | | | / __|  / _ \   |  _|   | |_  | |_   / _ \  / __| | __|
+ *     | |_| | \__ \ |  __/   | |___  |  _| |  _| |  __/ | (__  | |_ 
+ *      \___/  |___/  \___|   |_____| |_|   |_|    \___|  \___|  \__|
+ *                                                                   
+ */
+
   useEffect(()=>{
 
     if(id)
     {
-      console.log('il y a un id',id)
+      //console.log('il y a un id',id)
       setIsTutored(true)
     }
 
   })
+
+  /***
+ *      _____                          _     _                       
+ *     |  ___|  _   _   _ __     ___  | |_  (_)   ___    _ __    ___ 
+ *     | |_    | | | | | '_ \   / __| | __| | |  / _ \  | '_ \  / __|
+ *     |  _|   | |_| | | | | | | (__  | |_  | | | (_) | | | | | \__ \
+ *     |_|      \__,_| |_| |_|  \___|  \__| |_|  \___/  |_| |_| |___/
+ *                                                                   
+                                                                   
+ */
+
+
+
+ /***
+ *      ____    _                 _                 
+ *     |  _ \  (_)  ___   _ __   | |   __ _   _   _ 
+ *     | | | | | | / __| | '_ \  | |  / _` | | | | |
+ *     | |_| | | | \__ \ | |_) | | | | (_| | | |_| |
+ *     |____/  |_| |___/ | .__/  |_|  \__,_|  \__, |
+ *                       |_|                  |___/ 
+ *                                                                                                  
+ */
+
+
   return (
-    <View style={{position:'relative',height:'100%'}}>
+    <SafeAreaView style={{position:'relative',height:'100%',paddingVertical:30}}>
       {!isTutored && (
         <View style={styles.tuto}>
           <View style={{ width: "80%",padding:32, backgroundColor:"#fff",flexDirection:'column',alignItems:"center",justifyContent:"space-around" }}>
@@ -47,14 +87,8 @@ export default function ExploreScreen() {
         </View>
       )}
 
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: "#f0f0f0", dark: "#000000" }}
-        headerImage={
-          <Image
-            source={require("@/assets/images/gotrip-logo-rounded.png")}
-            style={styles.logo}
-          />
-        }
+      <View
+
       >
         <View
           style={[
@@ -77,8 +111,8 @@ export default function ExploreScreen() {
           </Text>
         </View>
         <Map inView={id}/>
-      </ParallaxScrollView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -114,8 +148,8 @@ const styles = StyleSheet.create({
   logo: {
     marginHorizontal: "auto",
     marginVertical: "auto",
-    height: 100,
-    width: 100,
+    height: 50,
+    width: 50,
   },
   mapTitleContainer: {
     paddingLeft: 16,

@@ -6,6 +6,7 @@ import {
   View,
   Text,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -14,10 +15,30 @@ import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import Separator from "@/components/Separator";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Router, useRouter } from "expo-router";
+
 export default function ProfileScreen() {
 
+  /***
+ *      ____  _____ ____ _        _    ____  _____ 
+ *     |  _ \| ____/ ___| |      / \  |  _ \| ____|
+ *     | | | |  _|| |   | |     / _ \ | |_) |  _|  
+ *     | |_| | |__| |___| |___ / ___ \|  _ <| |___ 
+ *     |____/|_____\____|_____/_/   \_\_| \_\_____|
+ *                                                 
+ */
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
-
+  /***
+ *      _____                          _     _                       
+ *     |  ___|  _   _   _ __     ___  | |_  (_)   ___    _ __    ___ 
+ *     | |_    | | | | | '_ \   / __| | __| | |  / _ \  | '_ \  / __|
+ *     |  _|   | |_| | | | | | | (__  | |_  | | | (_) | | | | | \__ \
+ *     |_|      \__,_| |_| |_|  \___|  \__| |_|  \___/  |_| |_| |___/
+ *                                                                   
+                                                                   
+ */
   const getItem = (_data, index: number) => ({
     id: Math.random().toString(12).substring(0),
     title: `Lieu ${index + 1}`,
@@ -27,10 +48,39 @@ export default function ProfileScreen() {
 
   const Item = ({ title }) => (
     <View style={styles.item}>
-      <Text style={[styles.title,{color: Colors[colorScheme].text} ]}>{title}</Text>
-      <Button color={colorScheme == 'light' ? '#2BA046' : '#2BA046' } title="supprimer" />
+      <Text style={[styles.title, { color: Colors[colorScheme].text }]}>
+        {title}
+      </Text>
+      <Button
+        color={colorScheme == "light" ? "#2BA046" : "#2BA046"}
+        title="supprimer"
+      />
     </View>
   );
+
+/***
+ *      _   _                  _____    __    __                 _   
+ *     | | | |  ___    ___    | ____|  / _|  / _|   ___    ___  | |_ 
+ *     | | | | / __|  / _ \   |  _|   | |_  | |_   / _ \  / __| | __|
+ *     | |_| | \__ \ |  __/   | |___  |  _| |  _| |  __/ | (__  | |_ 
+ *      \___/  |___/  \___|   |_____| |_|   |_|    \___|  \___|  \__|
+ *                                                                   
+ */
+
+
+ /***
+ *      ____    _                 _                 
+ *     |  _ \  (_)  ___   _ __   | |   __ _   _   _ 
+ *     | | | | | | / __| | '_ \  | |  / _` | | | | |
+ *     | |_| | | | \__ \ | |_) | | | | (_| | | |_| |
+ *     |____/  |_| |___/ | .__/  |_|  \__,_|  \__, |
+ *                       |_|                  |___/ 
+                                                                                                  
+ */
+
+
+
+
 
   return (
     <ParallaxScrollView
@@ -44,6 +94,9 @@ export default function ProfileScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Votre profil</ThemedText>
+        <TouchableOpacity onPress={() => router.replace("/")}>
+          <IconSymbol size={30} name={"logout"} color={"green"} />
+        </TouchableOpacity>
       </ThemedView>
 
       <ThemedView style={styles.profileContainer}>
@@ -64,7 +117,10 @@ export default function ProfileScreen() {
           <ThemedText type="defaultSemiBold" style={{ width: "70%" }}>
             Recevoir la newsletter
           </ThemedText>
-          <BouncyCheckbox fillColor="green" onPress={(isChecked: boolean) => {}} />
+          <BouncyCheckbox
+            fillColor="green"
+            onPress={(isChecked: boolean) => {}}
+          />
         </ThemedView>
 
         <ThemedText>
@@ -72,7 +128,7 @@ export default function ProfileScreen() {
         </ThemedText>
       </ThemedView>
 
-     <Separator/>
+      <Separator />
 
       <ThemedView style={styles.listContainer}>
         <ThemedText type="subtitle">Mes points d'intérêts</ThemedText>
@@ -91,7 +147,7 @@ export default function ProfileScreen() {
           />
         </ScrollView>
       </ThemedView>
-      <Separator/>
+      <Separator />
       <ThemedView style={styles.groupbuttonContainer}>
         <ThemedText>
           Saisissez votre mot de passe pour valider les modifications
@@ -114,12 +170,13 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
-    paddingHorizontal:32,
-    
+    paddingHorizontal: 32,
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   logo: {
     marginHorizontal: "auto",
-    marginVertical:"auto",
+    marginVertical: "auto",
     height: 100,
     width: 100,
   },
@@ -128,14 +185,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 8,
-   
-    
   },
   listContainer: {
     gap: 8,
-    paddingHorizontal:32,
+    paddingHorizontal: 32,
     width: "100%",
-  
   },
   item: {
     flexDirection: "row",
@@ -149,10 +203,8 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     gap: 8,
-    paddingVertical:16,
-    paddingHorizontal:32,
-  
-
+    paddingVertical: 16,
+    paddingHorizontal: 32,
   },
   buttonContainer: {
     gap: 8,
@@ -161,7 +213,6 @@ const styles = StyleSheet.create({
   groupbuttonContainer: {
     gap: 8,
     paddingVertical: 16,
-    paddingHorizontal:32,
-
+    paddingHorizontal: 32,
   },
 });
