@@ -4,13 +4,14 @@ const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? "";
 
 import { MarkerInterface } from "@/types/markers";
 import { apiFetch } from "./apiFetch";
-import { getToken } from "./token";
+import { getToken, setToken } from "./token";
 
 export const getMarkers = async () => {
   const token=await getToken()
+
   if(token)
   {
-    console.log(token)
+    
     return apiFetch(`${apiUrl}/api/markers`, {
       method: "GET",
       headers: {

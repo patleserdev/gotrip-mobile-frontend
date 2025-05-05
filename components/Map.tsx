@@ -210,8 +210,13 @@ console.log(updateMarker)
    */
   useEffect(() => {
     const fetchData = async () => {
+      
       const data = await getMarkers();
-      setMarkers(data);
+      if(data)
+      {
+        setMarkers(data);
+      }
+      
     };
 
     fetchData();

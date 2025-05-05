@@ -207,7 +207,7 @@ export default function HomeScreen() {
   useEffect(() => {
     setErrors({});
     setSuccess("");
-    setFormValues({ email: "", username: "", password: "" });
+    setFormValues({ email: "", username: "Patrice", password: "Al020910!!" });
   }, [componentLoaded]);
 
   /***
