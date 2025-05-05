@@ -6,12 +6,14 @@ import { MarkerInterface } from "@/types/markers";
 import { apiFetch } from "./apiFetch";
 import { getToken, setToken } from "./token";
 
+/**
+ * Récupération des markers
+ * @returns 
+ */
 export const getMarkers = async () => {
-  const token=await getToken()
+  const token = await getToken();
 
-  if(token)
-  {
-    
+  if (token) {
     return apiFetch(`${apiUrl}/api/markers`, {
       method: "GET",
       headers: {
@@ -19,9 +21,13 @@ export const getMarkers = async () => {
       },
     });
   }
-  
 };
 
+/**
+ * Maj d'un marker
+ * @param marker 
+ * @returns 
+ */
 export const updateMarker = async (marker: MarkerInterface) => {
   return apiFetch(`${apiUrl}/api/markers/${marker._id}`, {
     method: "PUT",

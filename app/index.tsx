@@ -172,21 +172,33 @@ export default function HomeScreen() {
     // se connecter
     if (validateForm() && componentLoaded == "signin") {
       const response = await connectUser(formValues);
-      if (response.error)
+      if(response)
       {
-        newErrors["default"] = response.error
-        setErrors(newErrors); // Mettre à jour l'état des erreurs
+        if (response.error)
+          {
+            newErrors["default"] = response.error
+            setErrors(newErrors); // Mettre à jour l'état des erreurs
+          }
+          else
+          {
+            if(response.jwtToken)
+            {
+              setToken(response.jwtToken)
+              setSuccess("Connexion réussie");
+              setTimeout(() => {
+                // confirmer
+                router.replace("/(tabs)/explore");
+              }, 2000);
+            }
+                      
+          }
       }
       else
       {
-        if(response.jwtToken)
-        setToken(response.jwtToken)
-        setSuccess("Connexion réussie");
-        setTimeout(() => {
-          // confirmer
-          router.replace("/(tabs)/explore");
-        }, 2000);
+        newErrors["default"] = "Erreur de connexion serveur"
+        setErrors(newErrors); // Mettre à jour l'état des erreurs
       }
+      
 
       }
       
