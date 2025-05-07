@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     
   },
   content: {
-    marginLeft:16,
     paddingVertical:8,
     paddingHorizontal:4,
+    
   },
 });

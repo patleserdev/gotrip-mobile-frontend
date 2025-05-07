@@ -20,8 +20,9 @@ import { useEffect, useState } from "react";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { addUser, connectUser } from "@/functions/users";
 import { setToken } from "@/functions/token";
+import Constants from "expo-constants";
 
-
+const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? "";
 const formFields = [
   {
     context: ["signup"],
@@ -256,6 +257,7 @@ export default function HomeScreen() {
         {componentLoaded == "signup" && (
           <ThemedText type="title">Inscription</ThemedText>
         )}
+        <ThemedText>{apiUrl}</ThemedText>
       </ThemedView>
 
       {componentLoaded == "welcome" && (

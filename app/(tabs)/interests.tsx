@@ -147,19 +147,13 @@ export default function InterestScreen() {
     return (
       <ScrollView
         contentContainerStyle={[
-          styles.listContainer,
-          {
-            backgroundColor:
-              colorScheme == "light"
-                ? "#28A046"
-                : Colors[colorScheme].background,
-          },
+          styles.listContainer
         ]}
         horizontal={true}
         style={{
+          
           width: "100%",
-          backgroundColor:
-            colorScheme == "light" ? "#28A046" : Colors[colorScheme].background,
+         
         }}
       >
         <FlatList
@@ -248,7 +242,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   listContainer: {
-    paddingHorizontal: 32,
+    paddingHorizontal: 5,
     width: "100%",
   },
   item: {
@@ -256,7 +250,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
-    marginVertical: 10,
+    paddingVertical:10,
+    paddingHorizontal:10,
+    marginBottom:5,
+
   },
   title: {
     width: "50%",

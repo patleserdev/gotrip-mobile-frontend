@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalView: {
-    minWidth: "70%",
+    width: "80%",
     minHeight: "50%",
     margin: 0,
     backgroundColor: "white",
