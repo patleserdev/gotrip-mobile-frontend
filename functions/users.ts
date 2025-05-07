@@ -1,6 +1,4 @@
-import Constants from "expo-constants";
-
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? "";
+const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
 
 import { UserInterface } from "@/types/users";
 import { apiFetch } from "./apiFetch";

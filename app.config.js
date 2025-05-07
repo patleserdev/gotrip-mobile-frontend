@@ -9,8 +9,6 @@ export default ({ config }) => ({
     ],
  
   extra: {
-    apiUrl: process.env.API_BACKEND,
-    env: process.env.ENV,
     "eas": {
       "projectId": "282625d7-8bdc-4e7e-882d-82cfcb59433a"
     }

@@ -1,9 +1,7 @@
-
-import Constants from 'expo-constants';
 import { apiFetch } from './apiFetch';
 import { getToken } from './token';
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? '';
+const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
 
 export const getCategories = async () => {
 const token = await getToken()
