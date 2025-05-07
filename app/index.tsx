@@ -20,9 +20,10 @@ import { useEffect, useState } from "react";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { addUser, connectUser } from "@/functions/users";
 import { setToken } from "@/functions/token";
-import Constants from "expo-constants";
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? "";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
+
 const formFields = [
   {
     context: ["signup"],
