@@ -11,7 +11,6 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import { Image } from "expo-image";
 import { ThemedText } from "./ThemedText";
 import MapView, { Marker } from "react-native-maps";
 import { useEffect, useState, useRef } from "react";
@@ -25,6 +24,9 @@ import { Colors } from "@/constants/Colors";
 import { getMarkers, updateMarker } from "@/functions/markers";
 import { CategorieInterface, MarkerInterface } from "@/types/markers";
 import { getCategories } from "@/functions/categories";
+import DisplayMarkerInModal from "./DisplayMarkerInModal";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import AddFeatures from "./AddFeatures";
 
 export function Map({ inView = null }: { inView?: string | string[] | null }) {
   /***
@@ -43,6 +45,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
   const [newMarker, setNewMarker] = useState<MarkerInterface>({
     _id: -1,
     title: "",
+    description: "",
     categorie: { _id: -1, title: "" },
     latitude: 0,
     longitude: 0,
@@ -55,6 +58,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
   const isFocused = useIsFocused();
   const mapRef = useRef<MapView>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [features, setFeatures] = useState(false);
 
   const [switchStates, setSwitchStates] = useState<{ [key: string]: boolean }>(
     {}
@@ -73,24 +77,33 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
    * Ajouter un point d'intérêt
    */
   const addMarker = () => {
-    setErrors([]);
+    const localErrors: string[] = [];
+
     for (const property in newMarker) {
       const key = property as keyof MarkerInterface;
       if (newMarker[key] == "" || newMarker[key] == 0) {
-        setErrors((prev) => [...prev, `Veuillez saisir ${key}`]);
+        localErrors.push(`Veuillez saisir ${key}`);
       }
     }
 
-    if (errors.length == 0) {
-      setModalVisible(false);
-      setMarkers([...markers, { ...newMarker, id: markers.length + 1 }]);
+    //vérifier si une catégorie est sélectionnée
+    if (newMarker["categorie"] && newMarker["categorie"].title == "") {
+      localErrors.push("Veuillez choisir une catégorie");
+    }
+    setErrors(localErrors);
+    console.log(newMarker);
+    if (localErrors.length == 0) {
+      //setModalVisible(false);
+      setMarkers([...markers, { ...newMarker, _id: markers.length + 1 }]);
       setNewMarker({
         _id: -1,
         title: "",
+        description: "",
         categorie: { _id: -1, title: "" },
         latitude: 0,
         longitude: 0,
       });
+      setFeatures(true);
       setErrors([]);
     }
   };
@@ -102,6 +115,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
     setNewMarker({
       _id: -1,
       title: "",
+      description: "",
       categorie: { _id: -1, title: "" },
       latitude: 0,
       longitude: 0,
@@ -119,7 +133,8 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
     setNewMarker({
       _id: markers.length,
       title: "",
-      categorie: null,
+      description: "",
+      categorie: { _id: -1, title: "" },
       latitude,
       longitude,
     });
@@ -160,38 +175,6 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
     }));
   };
 
-  const handleFavoriteForMe= async(marker:MarkerInterface) =>{
-
-    if (!marker || typeof marker === 'string') return;
-
-    // 1. Créer une version modifiée du marker
-    const updatedMarker = {
-      ...marker,
-      isFavorite: !marker.isFavorite,
-    };
-
-    // 2. Remplacer ce marker dans le tableau
-    const updatedMarkers = markers.map((oneMarker:MarkerInterface) =>
-      oneMarker._id === updatedMarker._id ? updatedMarker : oneMarker
-    );
-
-    // 3. Mettre à jour le state principal
-    setMarkers(updatedMarkers);
-
-    // 4. Appeler ta fonction
-     // update for me but first update the marker
-
-  /* const response= await updateMarker(updatedMarker)
-
-   if(response)
-   {
-  console.log(response)
-   }
-*/
-console.log(updateMarker)
-  }
-
-
   /***
    *      _   _                  _____    __    __                 _
    *     | | | |  ___    ___    | ____|  / _|  / _|   ___    ___  | |_
@@ -210,17 +193,14 @@ console.log(updateMarker)
    */
   useEffect(() => {
     const fetchData = async () => {
-      
       const data = await getMarkers();
-      if(data)
-      {
+      if (data) {
         setMarkers(data);
       }
-      
     };
 
     fetchData();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -229,7 +209,7 @@ console.log(updateMarker)
     };
 
     fetchData();
-  }, []);
+  }, [isFocused]);
 
   /**
    * Déplacement lors de la sélection du marqueur
@@ -301,34 +281,51 @@ console.log(updateMarker)
    */
   const displayMarkerInModal =
     markerInModal != null && markers
-      ? markers.find((marker: MarkerInterface) =>
-          marker._id == markerInModal ? marker : null
-        )
-      : "";
-  // console.log('displayMarkerInModal',displayMarkerInModal)
+      ? markers.find((marker: MarkerInterface) => marker._id === markerInModal)
+      : null;
 
   /**
    * Affichage du formulaire d'ajout d'un point d'intérêt
    */
   const displayInputs = (
-    <KeyboardAvoidingView
-      style={styles.inputContainer}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={300}
-    >
-      <SelectInput
-        title={"Choisir la catégorie"}
-        items={categories}
-        selected={handleSelected}
-      />
-      <Text>Nom du point d'intérêt</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nom du point"
-        keyboardType="default"
-        onChangeText={(text) => setNewMarker({ ...newMarker, title: text })}
-        value={newMarker.title}
-      />
+    <View style={styles.inputContainer}>
+      <View>
+        <SelectInput
+          title={"Choisir la catégorie"}
+          items={categories}
+          selected={handleSelected}
+        />
+      </View>
+      <View>
+        <ThemedText
+          style={{ color: colorScheme == "dark" ? "#000000" : "#000000" }}
+        >
+          Nom du point d'intérêt
+        </ThemedText>
+        <TextInput
+          style={styles.input}
+          placeholder="Nom du point"
+          keyboardType="default"
+          onChangeText={(text) => setNewMarker({ ...newMarker, title: text })}
+          value={newMarker.title}
+        />
+
+        <ThemedText
+          style={{ color: colorScheme == "dark" ? "#000000" : "#000000" }}
+        >
+          Description
+        </ThemedText>
+        <TextInput
+          style={styles.input}
+          placeholder="Saisissez des informations "
+          keyboardType="default"
+          onChangeText={(text) =>
+            setNewMarker({ ...newMarker, description: text })
+          }
+          value={newMarker.description}
+        />
+      </View>
+
       <View style={styles.buttonsContainer}>
         <Button
           title="Ajouter un point d'intérêt"
@@ -359,7 +356,7 @@ console.log(updateMarker)
             </Text>
           ))}
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 
   return (
@@ -381,7 +378,7 @@ console.log(updateMarker)
         {markers &&
           markers.map((marker: any, i: number) => (
             <Marker
-              key={i}
+              key={marker._id}
               coordinate={{
                 latitude: marker.latitude,
                 longitude: marker.longitude,
@@ -397,9 +394,9 @@ console.log(updateMarker)
       <View style={styles.bottomContainer}>
         {!markers && (
           <View style={{ padding: 10 }}>
-            <Text style={{ color: "red", fontWeight: 600 }}>
+            <ThemedText style={{ color: "red", fontWeight: 600 }}>
               Aucun marqueur récupéré
-            </Text>
+            </ThemedText>
           </View>
         )}
         <TouchableOpacity
@@ -424,126 +421,92 @@ console.log(updateMarker)
       </View>
 
       {/* MODAL */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          destroyNewMarker();
-          setModalVisible(false);
-        }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={100}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            {displayMarkerInModal && !isFilterable && (
-              <View style={styles.displayMarkerInModal}>
-                <View style={styles.rowTitleZone}>
-                  <ThemedText type="subtitle" style={styles.modalText}>
-                    {displayMarkerInModal?.title}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            destroyNewMarker();
+            setModalVisible(false);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              {/** Ajouter un point d'intérêts - formulaire **/}
+              {!isFilterable && !isEditable && !features && displayInputs}
+
+              {/** Ajouter un point d'intérêts - formulaire **/}
+              {!isFilterable && !isEditable && features && (
+                <View style={styles.featuresContainer}>
+                  <ThemedText style={{ color: "#000000" }}>
+                    Ajouter du contenu{" "}
                   </ThemedText>
-                  <TouchableOpacity onPress={()=>{handleFavoriteForMe(displayMarkerInModal)}}>
-                    {displayMarkerInModal &&
-                      displayMarkerInModal.isFavorite && (
-                        <IconSymbol
-                          size={24}
-                          name={"favorite"}
-                          color={"#000"}
-                        />
-                      )}
-
-                    {displayMarkerInModal &&
-                      !displayMarkerInModal.isFavorite && (
-                        <IconSymbol
-                          size={24}
-                          name={"favorite-border"}
-                          color={"#000"}
-                        />
-                      )}
-                  </TouchableOpacity>
+                  <AddFeatures />
                 </View>
-                <View>
-                  <ThemedText style={styles.modalTextCategorie} type="default">
-                    {displayMarkerInModal.categorie?.title}
-                  </ThemedText>
-                </View>
+              )}
 
-                <View>
-                  <ThemedText style={styles.modalText} type="default">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    nibh metus, lobortis non fermentum nec, euismod non ex.
-                    Suspendisse sagittis lorem magna, quis porttitor ex
-                    consectetur in. Lorem ipsum dolor sit amet, consectetur
-                    adipiscing elit. In convallis arcu leo, quis venenatis enim
-                    vulputate quis. Vivamus fringilla enim mauris, eu ultrices.
-                  </ThemedText>
-                </View>
+              {/** Afficher le marker dans le modal **/}
+              {displayMarkerInModal && !isFilterable && !features && (
+                <DisplayMarkerInModal marker={displayMarkerInModal} />
+              )}
 
-                {displayMarkerInModal && (
-                  <Image
-                    source={{ uri: "https://placehold.co/600x400" }}
-                    height={200}
-                    width={300}
-                    style={{ objectFit: "cover", overflow: "hidden" }}
-                  />
-                )}
-              </View>
-            )}
-
-            {/* la petite croix qui ferme ! **/}
-            <TouchableOpacity
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                destroyNewMarker();
-                setIsEditable(false);
-                setIsFilterable(false);
-              }}
-            >
-              <IconSymbol
-                style={styles.mapButton}
-                size={18}
-                name={"close"}
-                color={"#fff"}
-              />
-            </TouchableOpacity>
-
-            {/** Ajouter un point d'intérêts **/}
-            {!isFilterable && !isEditable && displayInputs}
-
-            {/* Afficher les FILTRES */}
-            {isFilterable && (
-              <View style={styles.filterContainer}>
-                <Text
-                  style={{
-                    color:
-                      colorScheme == "light"
-                        ? "green"
-                        : Colors[colorScheme].text,
-                    fontSize: 16,
-                  }}
-                >
-                  Filtrer les points d'intérêts
-                </Text>
-                <FlatList
-                  style={{ maxHeight: categories.length * 70 }}
-                  data={categories}
-                  renderItem={({ item }) => (
-                    <Badge
-                      key={item._id}
-                      title={`${item.title}`}
-                      bgColor="#27A046"
-                      color="#fff"
-                      value={!switchStates[item._id]} // par défaut false si pas défini
-                      onValueChange={() => toggleSwitch(item._id)}
-                    />
-                  )}
-                  keyExtractor={(item) => item._id.toString()}
+              {/* la petite croix qui ferme ! **/}
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  destroyNewMarker();
+                  setIsEditable(false);
+                  setIsFilterable(false);
+                }}
+              >
+                <IconSymbol
+                  style={styles.mapButton}
+                  size={18}
+                  name={"close"}
+                  color={"#fff"}
                 />
-              </View>
-            )}
+              </TouchableOpacity>
+
+              {/* Afficher les FILTRES */}
+              {isFilterable && (
+                <View style={styles.filterContainer}>
+                  <ThemedText
+                    style={{
+                      color:
+                        colorScheme == "light"
+                          ? "green"
+                          : Colors[colorScheme].text,
+                      fontSize: 16,
+                    }}
+                  >
+                    Filtrer les points d'intérêts
+                  </ThemedText>
+                  <FlatList
+                    style={{ maxHeight: categories.length * 70 }}
+                    data={categories}
+                    renderItem={({ item }) => (
+                      <Badge
+                        key={item._id}
+                        title={`${item.title}`}
+                        bgColor="#27A046"
+                        color="#fff"
+                        value={!switchStates[item._id]} // par défaut false si pas défini
+                        onValueChange={() => toggleSwitch(item._id)}
+                      />
+                    )}
+                    keyExtractor={(item) => item._id.toString()}
+                  />
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -581,9 +544,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     paddingHorizontal: 5,
-    flex: 1,
-    alignItems: "stretch",
-    justifyContent: "space-around",
+    minHeight: 400,
+    width: "100%",
+
+    gap: 20,
   },
   input: {
     borderWidth: 1,
@@ -599,7 +563,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flex: 0.5,
     height: 50,
-    justifyContent: "space-around",
+    gap: 10,
   },
 
   // modal
@@ -609,9 +573,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalView: {
-    width: "80%",
-    minHeight: "50%",
-    margin: 0,
+    width: "90%",
     backgroundColor: "white",
     borderRadius: 5,
     paddingTop: 50,
@@ -632,14 +594,14 @@ const styles = StyleSheet.create({
   },
   displayMarkerInModal: {
     alignItems: "flex-start",
-    width: 300,
+    width: "100%",
     minHeight: 500,
     gap: 10,
     paddingBottom: 10,
   },
   rowTitleZone: {
     marginTop: 10,
-    width: 300,
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -647,6 +609,7 @@ const styles = StyleSheet.create({
   modalTextCategorie: {
     width: "100%",
     textTransform: "capitalize",
+    color: "#000000",
   },
   button: {
     borderRadius: 100,
@@ -669,7 +632,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  modalText: {},
+  modalText: { color: "#000000" },
   errors: {
     color: "red",
     fontSize: 12,
@@ -686,5 +649,9 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     gap: 10,
+  },
+  featuresContainer: {
+    minHeight: 500,
+    width:'100%'
   },
 });

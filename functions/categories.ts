@@ -3,6 +3,7 @@ import { getToken } from './token';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
 
+
 export const getCategories = async () => {
 const token = await getToken()
 if(token)

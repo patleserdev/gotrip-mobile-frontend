@@ -21,9 +21,6 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { addUser, connectUser } from "@/functions/users";
 import { setToken } from "@/functions/token";
 
-
-const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
-
 const formFields = [
   {
     context: ["signup"],
@@ -258,7 +255,6 @@ export default function HomeScreen() {
         {componentLoaded == "signup" && (
           <ThemedText type="title">Inscription</ThemedText>
         )}
-        <ThemedText>{apiUrl}</ThemedText>
       </ThemedView>
 
       {componentLoaded == "welcome" && (
@@ -318,7 +314,7 @@ export default function HomeScreen() {
                   field.context.includes(componentLoaded) ? (
                     <View key={i} style={{ marginBottom: 10 }}>
                       {/* Label pour le champ */}
-                      <Text>{field.label}</Text>
+                      <ThemedText>{field.label}</ThemedText>
 
                       {/* Input dynamique */}
                       <TextInput
@@ -329,6 +325,7 @@ export default function HomeScreen() {
                           borderColor: "lightgrey",
                           padding: 10,
                           marginVertical: 5,
+                          color: colorScheme == 'dark' ? '#ffffff' : '#000000' 
                         }}
                         onChangeText={(text) =>
                           handleChange(field.name as keyof FormValues, text)
@@ -337,7 +334,7 @@ export default function HomeScreen() {
                       />
 
                       {field.comments && (
-                        <Text
+                        <ThemedText
                           style={{
                             color: "black",
                             fontStyle: "italic",
@@ -345,14 +342,14 @@ export default function HomeScreen() {
                           }}
                         >
                           {field.comments}
-                        </Text>
+                        </ThemedText>
                       )}
 
                       {/* Affichage des erreurs sous chaque champ */}
                       {errors[field.name as keyof FormValues] && (
-                        <Text style={{ color: "red", fontSize: 12 }}>
+                        <ThemedText style={{ color: "red", fontSize: 12 }}>
                           {errors[field.name as keyof FormValues]}
-                        </Text>
+                        </ThemedText>
                       )}
                     </View>
                   ) : null
@@ -374,17 +371,17 @@ export default function HomeScreen() {
                   />
 
                   {errors["default" as keyof FormValues] && (
-                    <Text style={{ color: "red", fontSize: 12, marginTop: 10 }}>
+                    <ThemedText style={{ color: "red", fontSize: 12, marginTop: 10 }}>
                       {errors["default" as keyof FormValues]}
-                    </Text>
+                    </ThemedText>
                   )}
 
                   {success && (
-                    <Text
+                    <ThemedText
                       style={{ color: "green", fontSize: 12, marginTop: 10 }}
                     >
                       {success}
-                    </Text>
+                    </ThemedText>
                   )}
                 </View>
               </KeyboardAvoidingView>

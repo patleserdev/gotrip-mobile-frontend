@@ -3296,6 +3296,13 @@ expo-blur@~14.1.4:
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-14.1.4.tgz#d246c0a224ce63321d022edfc0e6a8c5fa2cc865"
   integrity sha512-55P9tK/RjJZEcu2tU7BqX3wmIOrGMOOkmHztJMMws+ZGHzvtjnPmT7dsQxhOU9vPj77oHnKetYHU2sik3iBcCw==
 
+expo-camera@^16.1.6:
+  version "16.1.6"
+  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.1.6.tgz#9badbc3b93cab3386e3e70721d4f3c1983ab539c"
+  integrity sha512-caVSfoTUaayYhH5gicrXWCgBQIVrotPOH3jUDr4vhN5VQDB/+TWaY+le2nQtNXgQEz14Af+H/TNvYpvvNj5Ktg==
+  dependencies:
+    invariant "^2.2.4"
+
 expo-constants@~17.1.4, expo-constants@~17.1.5:
   version "17.1.5"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-17.1.5.tgz#7c39c0208a8401217cc2bb44c21b9d354dbc6c4f"
@@ -5741,6 +5748,11 @@ react-native-gesture-handler@~2.24.0:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
+
+react-native-image-picker@^8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-8.2.1.tgz#1ac7826563cbaa5d5298d9f2acc53c69805e5393"
+  integrity sha512-FBeGYJGFDjMdGCcyubDJgBAPCQ4L1D3hwLXyUU91jY9ahOZMTbluceVvRmrEKqnDPFJ0gF1NVhJ0nr1nROFLdg==
 
 react-native-is-edge-to-edge@1.1.7:
   version "1.1.7"
