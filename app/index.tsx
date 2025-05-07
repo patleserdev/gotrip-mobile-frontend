@@ -67,6 +67,7 @@ interface FormErrors {
 }
 
 export default function HomeScreen() {
+  const apiUrl = process.env.EXPO_PUBLIC_API_BACKEND ?? '';
   /***
    *      _____            _                 _   _
    *     |  __ \          | |               | | (_)
@@ -255,6 +256,8 @@ export default function HomeScreen() {
         {componentLoaded == "signup" && (
           <ThemedText type="title">Inscription</ThemedText>
         )}
+        <Text>{apiUrl}</Text>
+        
       </ThemedView>
 
       {componentLoaded == "welcome" && (
