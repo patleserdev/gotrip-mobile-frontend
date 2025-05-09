@@ -9,7 +9,7 @@ export default function DisplayMarkerInModal({marker}:{marker:MarkerInterface})
 {
 const [markerIn,setMarkerIn]=useState(marker)
 
-    const handleFavoriteForMe = async (marker: MarkerInterface) => {
+const handleFavoriteForMe = async (marker: MarkerInterface) => {
         if (!marker || typeof marker === "string") return;
     
         // 1. Créer une version modifiée du marker

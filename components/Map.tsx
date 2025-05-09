@@ -64,6 +64,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
     {}
   );
 
+  //console.log(markerInModal)
   /***
    *      _____                          _     _
    *     |  ___|  _   _   _ __     ___  | |_  (_)   ___    _ __    ___
@@ -91,7 +92,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
       localErrors.push("Veuillez choisir une catégorie");
     }
     setErrors(localErrors);
-    console.log(newMarker);
+    //console.log(newMarker);
     if (localErrors.length == 0) {
       //setModalVisible(false);
       setMarkers([...markers, { ...newMarker, _id: markers.length + 1 }]);
@@ -284,6 +285,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
       ? markers.find((marker: MarkerInterface) => marker._id === markerInModal)
       : null;
 
+     
   /**
    * Affichage du formulaire d'ajout d'un point d'intérêt
    */
@@ -450,7 +452,7 @@ export function Map({ inView = null }: { inView?: string | string[] | null }) {
               )}
 
               {/** Afficher le marker dans le modal **/}
-              {displayMarkerInModal && !isFilterable && !features && (
+              {displayMarkerInModal != undefined && !isFilterable && !features && (
                 <DisplayMarkerInModal marker={displayMarkerInModal} />
               )}
 

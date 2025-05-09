@@ -256,7 +256,7 @@ export default function HomeScreen() {
         {componentLoaded == "signup" && (
           <ThemedText type="title">Inscription</ThemedText>
         )}
-        <Text>{apiUrl}</Text>
+        {/* <Text>{apiUrl}</Text> */}
         
       </ThemedView>
 
@@ -284,11 +284,11 @@ export default function HomeScreen() {
       {componentLoaded == "welcome" && (
         <ThemedView style={styles.groupbuttonContainer}>
           <ThemedView style={styles.buttonContainer}>
-            <Button
+            {/* <Button
               color="#28A046"
               onPress={() => router.push("/(tabs)/explore")}
               title="Connexion rapide"
-            />
+            /> */}
           </ThemedView>
 
           <ThemedView style={styles.buttonContainer}>
