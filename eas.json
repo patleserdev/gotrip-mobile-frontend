@@ -1,0 +1,28 @@
+{
+    "cli": {
+      "version": ">= 3.0.0"
+    },
+    "build": {
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal",
+        "env": {
+          "ENVFILE": ".env.local"
+        }
+      },
+      "preview": {
+        "developmentClient": true,
+        "distribution": "internal",
+        "env": {
+          "ENVFILE": ".env.preview"
+        }
+      },
+      "production": {
+        "distribution": "store",
+        "env": {
+          "ENVFILE": ".env.production"
+        }
+      }
+    }
+  }
+  
