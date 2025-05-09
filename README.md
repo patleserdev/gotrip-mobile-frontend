@@ -12,9 +12,10 @@ Elle permet également à la communauté inscrite d'avoir accès à ces points d
 - Map 
 - Géolocalisation
 - Thème Jour/Nuit
-- Authentification(loading)
+- Authentification
+- Mode Tuto sur la map
 - Upload d'images(loading)
 - Upload de vidéos(loading)
-- Mode Tuto sur la map
+
 
 ![gotripinahand](https://github.com/user-attachments/assets/82be3a59-7b21-43a4-b193-934978142240)
