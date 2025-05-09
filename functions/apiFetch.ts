@@ -11,6 +11,7 @@ export const apiFetch = async <T = any>(
       },
       ...options,
     });
+    console.log(response)
 
     if (!response.ok) {
       console.error(`API error: ${response.status} ${response.statusText}`);
